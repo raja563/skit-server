@@ -1,0 +1,44 @@
+.course-image {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  transition: transform 0.3s ease-in-out;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.course-image:hover {
+  transform: scale(1.05);
+}
+
+.image-box {
+  background: #fff;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  transform-style: preserve-3d;
+}
+
+.image-box:hover {
+  transform: rotateY(4deg) rotateX(2deg) scale(1.02);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+.custom-table th {
+  width: 35%;
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+.custom-table td {
+  background-color: #ffffff;
+}
+
+@media (max-width: 767px) {
+  .course-image {
+    height: 200px;
+  }
+}
+
+@media (max-width: 575px) {
+  .course-image {
+    height: 180px;
+  }
+}

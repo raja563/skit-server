@@ -1,0 +1,394 @@
+/* =============================
+   ✦ Global Styles & Variables
+   ============================= */
+:root {
+  --main-color: #028990;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  background-color: #fff;
+}
+
+main {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+
+/* =============================
+   ✦ Learn Here Section
+   ============================= */
+.learn-here-container {
+  background-color: var(--main-color);
+  color: white;
+  padding: 40px 20px;
+}
+
+.learn-here {
+  max-width: 500px;
+  padding: 20px;
+}
+
+.learn-heading {
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.learn-content {
+  margin-top: 20px;
+  font-size: 16px;
+  color: lightgrey;
+}
+
+.main-img-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .main-img-container {
+    flex-direction: row;
+    justify-content: space-evenly;
+  }
+}
+
+.moving-outer {
+  padding: 8px 20px;
+  box-shadow: 0 0 8px 2px lightgray;
+  border-radius: 32px;
+  background-color: var(--main-color);
+}
+
+.moving-content {
+  color: yellow;
+  font-size: 18px;
+}
+
+.box-container {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.learn-box {
+  width: 180px;
+  height: 160px;
+  background-color: var(--main-color);
+  border-radius: 10px;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.4s ease;
+}
+
+.learn-box:hover {
+  transform: rotateY(10deg) scale(1.05);
+  background-color: #04a49d;
+}
+
+.learn-box p {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+
+/* =============================
+   ✦ Why Choose Us
+   ============================= */
+.Why-Choose-container {
+  text-align: center;
+  margin-top: 100px;
+  padding: 20px;
+}
+
+.Why-Choose-container h2 {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.choose-line {
+  border: 2px solid var(--main-color);
+  width: 100px;
+  margin: 12px auto;
+}
+
+
+/* =============================
+   ✦ Dreams Section
+   ============================= */
+.Dreams-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 20px;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .Dreams-container {
+    flex-direction: row;
+    justify-content: space-evenly;
+  }
+}
+
+.dreams-img {
+  max-width: 450px;
+}
+
+.dreams-img img {
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dreams-list {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.list {
+  background-color: var(--main-color);
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  text-align: center;
+}
+
+
+/* =============================
+   ✦ Features Section
+   ============================= */
+.features-overview {
+  padding: 20px;
+  text-align: center;
+}
+
+.features-box-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  padding: 20px;
+}
+
+.features-box {
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  padding: 32px;
+  border-radius: 12px;
+  transition: transform 0.3s;
+}
+
+.features-box:hover {
+  transform: scale(1.05);
+}
+
+.notes .line {
+  border: 2px solid lightgrey;
+  width: 120px;
+  margin: 8px auto;
+}
+
+
+/* =============================
+   ✦ Testimonials
+   ============================= */
+.testimonials-box-container {
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.testimonial-box {
+  width: 300px;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.pro-img img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+.pro-name h3 {
+  font-size: 18px;
+}
+
+.pro-list {
+  font-size: 30px;
+  color: var(--main-color);
+}
+
+
+/* =============================
+   ✦ Bright Stars Section
+   ============================= */
+.bright-star-box-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+.bright-star-box {
+  width: 300px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  transition: transform 0.4s ease;
+}
+
+.bright-star-box:hover {
+  transform: rotateY(5deg) scale(1.03);
+}
+
+.star-img img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+}
+
+.star-name {
+  text-align: center;
+  padding: 12px;
+}
+
+
+/* =============================
+   ✦ Modal Styles
+   ============================= */
+.model-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  transition: all 0.3s ease;
+}
+
+.model_show {
+  display: flex;
+}
+
+.model-container {
+  width: 320px;
+  background-color: var(--main-color);
+  color: white;
+  border-radius: 16px;
+  transform: translateY(-100vh);
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  padding: 20px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}
+
+.modelShowContainer {
+  transform: translateY(0);
+}
+
+.model-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.model-hed h2 {
+  font-size: 18px;
+}
+
+.model-btn button {
+  background-color: rgba(0, 0, 255, 0.45);
+  color: white;
+  width: 32px;
+  height: 32px;
+  font-size: 20px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.model-btn button:hover {
+  background-color: rgba(0, 0, 255, 0.7);
+}
+
+form {
+  margin-top: 12px;
+}
+
+form input,
+form select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+}
+
+form button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background-color: white;
+  color: var(--main-color);
+  font-weight: 600;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+form button:hover {
+  background-color: #ddd;
+}
+
+/* =============================
+   ✦ Enquiry Button (Fixed Rotated)
+   ============================= */
+.en {
+  position: fixed;
+  right: -24px;
+  top: 250px;
+  transform: rotate(90deg);
+  z-index: 1001;
+  background-color: var(--main-color);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 12px 12px 0 0;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+/* Fix extra space below slider */
+section:last-of-type {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}

@@ -1,0 +1,17 @@
+.faculty-card-3d {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 20px;
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+}
+.faculty-card-3d:hover {
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 20px 35px rgba(0, 0, 0, 0.3);
+}
+.img-preview {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid #28a745;
+}
+

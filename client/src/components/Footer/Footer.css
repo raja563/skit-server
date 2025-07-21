@@ -1,0 +1,97 @@
+/* =====  Core layout  ===== */
+footer {
+  background-color: var(--main-color, #005755);
+  color: #ffffff;
+  width: 100%;
+  font-family: inherit;
+}
+
+.foot-container {
+  display: flex;
+  justify-content: space-around;
+  gap: 24px;
+  padding: 48px 72px;
+  flex-wrap: wrap;                 /* lets items wrap on small screens */
+}
+
+/* Every direct child gets a flexible min‑width so four columns fit on desktop */
+.foot-container > div {
+  flex: 1 1 220px;                 /* grow | shrink | basis  */
+  min-width: 220px;
+}
+
+/* Re‑usable link list */
+.footer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.footer-list a {
+  color: lightgrey;
+  font-size: 14px;
+  text-decoration: none;
+  transition: transform 0.25s ease, color 0.25s ease;
+}
+
+/* tasteful 2D hover effect */
+.footer-list a:hover {
+  color: #ffffff;
+  transform: translateX(4px);
+}
+
+/* Typography */
+h1 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+h2 {
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+p {
+  font-size: 14px;
+  line-height: 24px;
+  font-weight: 300;
+}
+
+/* Copy‑right bar */
+.copy {
+  text-align: center;
+  padding: 16px 8px 24px;
+  font-size: 13px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* =====  Tablet (≤ 992 px)  ===== */
+@media (max-width: 992px) {
+  .foot-container {
+    padding: 40px 32px;
+    gap: 32px;
+  }
+}
+
+/* =====  Phone (≤ 576 px)  ===== */
+@media (max-width: 576px) {
+  .foot-container {
+    flex-direction: column;        /* single column */
+    padding: 32px 20px;
+  }
+
+  .foot-container > div {
+    min-width: 100%;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+  h2 {
+    font-size: 16px;
+  }
+  .footer-list a {
+    font-size: 13px;
+  }
+}

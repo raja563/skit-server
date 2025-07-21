@@ -1,0 +1,62 @@
+.heading-para{
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Global Elements */
+.page-heading-box {
+  background: linear-gradient(135deg, #e9f4ff, #fff);
+  border-radius: 20px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.page-heading {
+  font-size: 2.5rem;
+}
+
+.heading-para {
+  font-size: 1.2rem;
+  color: #333;
+}
+
+ul {
+  list-style-type: square;
+  padding-left: 1.5rem;
+}
+
+/* Images with 3D Hover */
+.founder-img,
+.chairman-img,
+.director-img {
+  border-radius: 20px;
+  transition: transform 0.4s ease, box-shadow 0.3s ease;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.founder-img:hover,
+.chairman-img:hover,
+.director-img:hover {
+  transform: scale(1.05) rotateY(8deg);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .page-heading {
+    font-size: 1.8rem;
+  }
+
+  .founder-img,
+  .chairman-img,
+  .director-img {
+    width: 100%;
+  }
+
+  .heading-para {
+    font-size: 1rem;
+  }
+
+  ul {
+    padding-left: 1rem;
+  }
+}

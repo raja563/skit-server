@@ -1,0 +1,47 @@
+[
+    {
+      "id":"0",
+      "name":"priya tripathi",
+      "image":"img/priya tripathi.jpg",
+      "des":" Repudiandae veritatis vel facilis perferendis, sequi tempora saepe, repellat nesciunt odio officia commodi error esse, ad in culpa eligendi. Esse, illum hic voluptatum nam id tempore veniam exercitationem minus obcaecati perferendis eius soluta rem",
+      "course":"BCA",
+      "placed":"HDFC Bank"
+      
+   },
+    {
+      "id":"1",
+      "name":"Rohit",
+      "image":"img/rohit.jpg",
+      "des":"ipsa! Eius beatae ducimus obcaecati consectetur molestias quasi asperiores consequuntur dolor doloremque? Repudiandae veritatis vel facilis perferendis, sequi tempora saepe, repellat nesciunt odio officia commodi error esse, ad in culpa eligendi. Esse, illum hic voluptatum nam id tempore veniam exercitationem minus obcaecati perferendis eius soluta rem",
+      "course":"BBA",
+      "placed":"U.P Police"
+      
+   },
+    {
+      "id":"2",
+      "name":"roshani",
+      "image":"img/roshani.jpg",
+      "des":" beatae ducimus obcaecati consectetur molestias quasi asperiores consequuntur dolor doloremque? Repudiandae veritatis vel facilis perferendis, sequi tempora saepe, repellat nesciunt odio officia commodi error esse, ad in culpa eligendi. Esse, illum hic voluptatum nam id tempore veniam exercitationem minus obcaecati perferendis eius soluta rem",
+      "course":"BCA",
+      "placed":"TCS"
+      
+   },
+    {
+      "id":"",
+      "name":"shivam yadav",
+      "image":"img/shivam yadav.jpg",
+      "des":" maxime molestiae ipsa! Eius beatae ducimus obcaecati consectetur molestias quasi asperiores consequuntur dolor doloremque? Repudiandae veritatis vel facilis perferendis, sequi tempora saepe, repellat nesciunt odio officia commodi error esse, ad in culpa eligendi. Esse, illum hic voluptatum nam id tempore veniam exercitationem minus obcaecati perferendis eius soluta rem",
+      "course":"BBA",
+      "placed":"Agniveer"
+      
+   },
+    {
+      "id":"4",
+      "name":"rishav",
+      "image":"img/rishav.jpg",
+      "des":"ducimus obcaecati consectetur molestias quasi asperiores consequuntur dolor doloremque? Repudiandae veritatis vel facilis perferendis, sequi tempora saepe, repellat nesciunt odio officia commodi error esse, ad in culpa eligendi. Esse, illum hic voluptatum nam id tempore veniam exercitationem minus obcaecati perferendis eius soluta rem",
+      "course":"BBA",
+      "placed":"Vedanta Hospital"
+      
+   }
+]

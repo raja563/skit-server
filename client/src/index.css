@@ -1,0 +1,42 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: roboto;
+}
+
+:root {
+    --main-color: #008374;
+    --font-size: 16px;
+    --sec-color:#007668;
+  }
+
+
+  .page-heading-box{
+    background-color:var(--main-color);
+    color: white;
+    text-transform: capitalize;
+    text-align: center;
+    height: 220px;
+   padding: 72px 0;
+}
+
+.page-heading{
+    font-size: 32px;
+    font-weight:700;
+}
+
+.heading-para{
+    font-size:12px;
+    
+}
+
+.heading-box{
+    text-align: center;
+    margin:24px 50px;
+}
+.heading-underline{
+    border:2px solid var(--main-color);
+    margin: auto;
+    width: 120px;
+}

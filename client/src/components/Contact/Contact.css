@@ -1,0 +1,151 @@
+:root {
+  --main-color: #005755;
+  --sec-color: #007668;
+}
+
+/* Page Heading */
+.page-heading-box {
+  background-color: var(--main-color);
+  color: white;
+  text-transform: capitalize;
+  text-align: center;
+  height: 220px;
+  padding: 72px 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Reusable 3D effect */
+.shadow-3d {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
+  transition: transform 0.3s ease-in-out;
+}
+.shadow-3d:hover {
+  transform: perspective(1000px) rotateX(1deg) rotateY(2deg);
+}
+
+.page-heading {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.heading-para {
+  font-size: 18px;
+}
+
+.heading-box {
+  text-align: center;
+  margin: 24px 20px;
+}
+
+.heading-underline {
+  border: 2px solid var(--main-color);
+  margin: auto;
+  width: 120px;
+}
+
+/* Contact Container */
+.contact-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 12px 20px;
+  max-width: 1150px;
+  margin-inline: auto;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Left Address */
+.contact-address-container {
+  width: 100%;
+  max-width: 35%;
+  background-color: var(--main-color);
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+.address-box {
+  background-color: var(--sec-color);
+  color: white;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.contact-form-container {
+  width: 100%;
+  max-width: 65%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Inputs */
+.inputgroup {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.inputgroup input,
+.inputgroup textarea {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+textarea {
+  resize: none;
+}
+
+.button {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.button button {
+  background-color: var(--main-color);
+  border: none;
+  border-radius: 24px;
+  padding: 12px 20px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.button button:hover {
+  background-color: var(--sec-color);
+  box-shadow: 0 0 10px rgba(0, 128, 128, 0.5);
+  transform: scale(1.05);
+}
+
+/* Responsive */
+@media screen and (max-width: 900px) {
+  .contact-container {
+    flex-direction: column;
+  }
+
+  .contact-address-container,
+  .contact-form-container {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .inputgroup {
+    flex-direction: column;
+  }
+
+  .inputgroup input,
+  .inputgroup textarea {
+    width: 100%;
+  }
+
+  textarea {
+    width: 100%;
+  }
+}

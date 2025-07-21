@@ -1,0 +1,138 @@
+/* Reusable box/card with hover effects */
+.box {
+  height: 120px;
+  cursor: pointer;
+  line-height: 120px;
+  box-shadow: 0 2px 6px rgba(0, 123, 255, 0.4);
+  border-radius: 12px;
+  transition: 0.4s ease;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(4px);
+  color: white;
+  text-align: center;
+  font-weight: 500;
+}
+
+.box:hover {
+  box-shadow: 0 4px 20px rgba(0, 123, 255, 0.6);
+  transform: scale(1.03);
+  font-size: 1.05rem;
+}
+
+/* Sidebar list */
+.sidebar {
+  list-style: none;
+  margin-top: 20px;
+  padding-left: 0;
+}
+
+.sidebar li {
+  background-color: rgba(255, 255, 255, 0.07);
+  margin: 6px 0;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.sidebar li:hover {
+  background-color: rgba(0, 123, 255, 0.2);
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.4);
+  transform: translateX(5px);
+}
+/* Parent item that holds nested list */
+
+/* ====================================================== */
+
+/* Global anchor tag styles */
+a {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #00d4ff;
+}
+
+/* Dashboard card container link */
+.dash-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Dashboard cards */
+.dash-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  text-align: center;
+  padding: 35px 20px;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.dash-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 10px 30px rgba(0, 123, 255, 0.4);
+}
+
+/* Gradient backgrounds */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #007bff, #00c6ff);
+}
+
+.bg-gradient-warning {
+  background: linear-gradient(135deg, #ffc107, #ff9800);
+}
+
+.bg-gradient-success {
+  background: linear-gradient(135deg, #28a745, #77dd77);
+}
+
+.bg-gradient-info {
+  background: linear-gradient(135deg, #17a2b8, #00d4ff);
+}
+
+.bg-gradient-danger {
+  background: linear-gradient(135deg, #dc3545, #ff6b6b);
+}
+
+.bg-gradient-dark {
+  background: linear-gradient(135deg, #343a40, #636363);
+}
+
+/* Icon styling inside cards */
+.dash-card i {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+  display: block;
+  color: #fff;
+  opacity: 0.85;
+  transition: transform 0.3s ease;
+}
+
+.dash-card:hover i {
+  transform: scale(1.15);
+  opacity: 1;
+}
+
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 1s ease-in-out both;
+}

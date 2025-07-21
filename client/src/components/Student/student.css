@@ -1,0 +1,12 @@
+.upload-input{
+    width:92px;
+    padding: 0;
+    margin: 0;
+    
+}
+
+
+.student-portal{
+    background-color:var(--main-color);
+    min-height: 100vh;
+}
