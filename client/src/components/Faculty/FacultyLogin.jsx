@@ -11,8 +11,8 @@ const FacultyLogin = () => {
   const [newPassword, setNewPassword] = useState('');
   const [showReset, setShowReset] = useState(false);
 
- const loginURL = 'https://skit-backend.onrender.com/api/faculty/login/';
-const resetURL = 'https://skit-backend.onrender.com/api/faculty/reset-password/';
+const loginURL = `${import.meta.env.VITE_API_URL}/api/faculty/login/`;
+const resetURL = `${import.meta.env.VITE_API_URL}/api/faculty/reset-password/`;
 
 
   const inputHandler = (e) => {

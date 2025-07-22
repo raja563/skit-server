@@ -41,7 +41,7 @@ const FacultyRegister = () => {
     }
   };
 
-  const registerURL = 'https://skit-backend.onrender.com/api/faculty/register/';
+  const registerURL = `${import.meta.env.VITE_API_URL}/api/faculty/register/`;
 
   const validateForm = () => {
     const emailRegex = /\S+@\S+\.\S+/;

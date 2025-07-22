@@ -25,7 +25,7 @@ const Contact = () => {
     setEnquiry({ ...enquiry, [name]: value });
   };
 
-  const postURL = 'http://127.0.0.1:8000/api/enquiry/';
+  const postURL = `${import.meta.env.VITE_API_URL}/api/enquiry/`;
   const submitForm = async (e) => {
     e.preventDefault();
     await axios.post(postURL, enquiry).then((response) => {

@@ -11,6 +11,8 @@ const LoginSignup = () => {
     password: '',
   });
 
+const userLogin = `${import.meta.env.VITE_API_URL}/api/user/login/`;
+
   const inputHandler = (e) => {
     const { name, value } = e.target;
     setLogin({ ...login, [name]: value });
@@ -19,7 +21,7 @@ const LoginSignup = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/user/login/`, login);
+      const response = await axios.post(userLogin, login);
       toast.success(response.data.msg, { position: "top-right" });
       navigate('/dashboard');
     } catch (error) {
