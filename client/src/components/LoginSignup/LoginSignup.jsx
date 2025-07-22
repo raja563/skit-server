@@ -19,7 +19,7 @@ const LoginSignup = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/user/login/', login);
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/user/login/`, login);
       toast.success(response.data.msg, { position: "top-right" });
       navigate('/dashboard');
     } catch (error) {

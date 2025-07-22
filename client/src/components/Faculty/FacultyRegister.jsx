@@ -41,7 +41,7 @@ const FacultyRegister = () => {
     }
   };
 
-  const registerURL = 'http://127.0.0.1:8000/api/faculty/register/';
+  const registerURL = 'https://skit-backend.onrender.com/api/faculty/register/';
 
   const validateForm = () => {
     const emailRegex = /\S+@\S+\.\S+/;

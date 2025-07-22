@@ -11,8 +11,9 @@ const FacultyLogin = () => {
   const [newPassword, setNewPassword] = useState('');
   const [showReset, setShowReset] = useState(false);
 
-  const loginURL = 'http://127.0.0.1:8000/api/faculty/login/';
-  const resetURL = 'http://127.0.0.1:8000/api/faculty/reset-password/';
+ const loginURL = 'https://skit-backend.onrender.com/api/faculty/login/';
+const resetURL = 'https://skit-backend.onrender.com/api/faculty/reset-password/';
+
 
   const inputHandler = (e) => {
     const { name, value } = e.target;
