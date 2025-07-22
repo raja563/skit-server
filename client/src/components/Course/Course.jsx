@@ -1,7 +1,6 @@
-import React from 'react';
 import Footer from '../Footer/Footer';
 import Header from '../Header/Header';
-import './Course.css';
+import './course.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Course = () => {
