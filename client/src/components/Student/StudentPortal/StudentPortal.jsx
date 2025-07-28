@@ -16,7 +16,8 @@ const StudentPortal = () => {
         {/* Sidebar */}
         <div className="col-sm-5 col-md-4 text-white">
           <ul className='sidebar'>
-                          <li><Link className='btn btn-warning' to={'/'}>Back</Link></li>
+                          <li><Link className='text-warning' to={'/'}>Back</Link></li>
+                          <li><Link>Profile</Link></li>
                           <li className='nested-list'> <Link to={'syllabus'}>Syllabus</Link>
                           </li>
                           <li>Class Schedule</li>

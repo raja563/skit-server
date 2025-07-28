@@ -6,20 +6,17 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-const API = "http://127.0.0.1:8000/api/quickenq/";
+// ✅ API now uses environment variable
+const API = `${import.meta.env.VITE_API_URL}/api/quickenq/`;
 
 const EnqData = () => {
   const [enquiries, setEnquiries] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  /* ────────────────────── search / filter ────────────────────── */
   const [courseFilter, setCourseFilter] = useState(null);
-
-  /* ────────────────────── pagination ──────────────────────────── */
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  /* ────────────────────── fetch data ──────────────────────────── */
   useEffect(() => {
     axios
       .get(API)
@@ -33,20 +30,16 @@ const EnqData = () => {
       });
   }, []);
 
-  /* ────────────────────── derived lists ───────────────────────── */
   const uniqueCourses = [...new Set(enquiries.map((e) => e.course))];
   const courseOptions = uniqueCourses.map((c) => ({ label: c, value: c }));
 
-  /* filter by course */
   const filtered = useMemo(() => {
     if (!courseFilter) return enquiries;
     return enquiries.filter((e) => e.course === courseFilter.value);
   }, [enquiries, courseFilter]);
 
-  /* reset page when filter changes */
   useEffect(() => setCurrentPage(1), [courseFilter]);
 
-  /* pagination maths */
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
   const currentItems = filtered.slice(
@@ -54,7 +47,6 @@ const EnqData = () => {
     indexOfFirstItem + itemsPerPage
   );
 
-  /* ────────────────────── export helpers ──────────────────────── */
   const exportToExcel = () => {
     const wsData = [
       ["Sr No", "Name", "Mobile", "Email", "Course"],
@@ -96,90 +88,85 @@ const EnqData = () => {
     <div className="fluid mt-4">
       <div className="row">
         <div className="col-12">
+          <h2 className="mb-4 text-center bg-success text-white p-2">
+            Quick Enquiries
+          </h2>
 
-       
-      <h2 className="mb-4 text-center bg-success text-white p-2">
-        Quick Enquiries
-      </h2>
-
-      {/* ────────────────────── toolbar ─────────────────────────── */}
-      <div className="row mb-3">
-        <div className="col-md-4 mb-2 text-dark">
-          <Select
-            isClearable
-            options={courseOptions}
-            placeholder="Search by Course"
-            value={courseFilter}
-            onChange={setCourseFilter}
-          />
-        </div>
-        <div className="col-md-8 d-flex gap-2">
-          <button onClick={exportToExcel} className="btn btn-success">
-            Export Excel
-          </button>
-          <button onClick={exportToPDF} className="btn btn-danger">
-            Export PDF
-          </button>
-        </div>
-      </div>
-
-      {/* ────────────────────── table ───────────────────────────── */}
-      {loading ? (
-        <p className="text-center">Loading...</p>
-      ) : filtered.length === 0 ? (
-        <p className="text-center">No enquiries found.</p>
-      ) : (
-        <>
-          <div className="table-responsive">
-            <table className="table table-bordered table-hover align-middle">
-              <thead className="table-dark">
-                <tr>
-                  <th>#</th>
-                  <th>Name</th>
-                  <th>Mobile</th>
-                  <th>Email</th>
-                  <th>Course</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentItems.map((item, idx) => (
-                  <tr key={item.id}>
-                    <td>{indexOfFirstItem + idx + 1}</td>
-                    <td>{item.name}</td>
-                    <td>{item.mobile}</td>
-                    <td>{item.email}</td>
-                    <td>{item.course}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="row mb-3">
+            <div className="col-md-4 mb-2 text-dark">
+              <Select
+                isClearable
+                options={courseOptions}
+                placeholder="Search by Course"
+                value={courseFilter}
+                onChange={setCourseFilter}
+              />
+            </div>
+            <div className="col-md-8 d-flex gap-2">
+              <button onClick={exportToExcel} className="btn btn-success">
+                Export Excel
+              </button>
+              <button onClick={exportToPDF} className="btn btn-danger">
+                Export PDF
+              </button>
+            </div>
           </div>
 
-          {/* ────────────────────── pagination ──────────────────── */}
-          <nav className="d-flex justify-content-center mt-3">
-            <ul className="pagination mb-0">
-              {Array.from({ length: totalPages }, (_, i) => (
-                <li
-                  key={i}
-                  className={`page-item ${
-                    currentPage === i + 1 ? "active" : ""
-                  }`}
-                >
-                  <button
-                    onClick={() => setCurrentPage(i + 1)}
-                    className="page-link"
-                  >
-                    {i + 1}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </>
-      )}
-    </div>
-     </div>
+          {loading ? (
+            <p className="text-center">Loading...</p>
+          ) : filtered.length === 0 ? (
+            <p className="text-center">No enquiries found.</p>
+          ) : (
+            <>
+              <div className="table-responsive">
+                <table className="table table-bordered table-hover align-middle">
+                  <thead className="table-dark">
+                    <tr>
+                      <th>#</th>
+                      <th>Name</th>
+                      <th>Mobile</th>
+                      <th>Email</th>
+                      <th>Course</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {currentItems.map((item, idx) => (
+                      <tr key={item.id}>
+                        <td>{indexOfFirstItem + idx + 1}</td>
+                        <td>{item.name}</td>
+                        <td>{item.mobile}</td>
+                        <td>{item.email}</td>
+                        <td>{item.course}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <nav className="d-flex justify-content-center mt-3">
+                <ul className="pagination mb-0">
+                  {Array.from({ length: totalPages }, (_, i) => (
+                    <li
+                      key={i}
+                      className={`page-item ${
+                        currentPage === i + 1 ? "active" : ""
+                      }`}
+                    >
+                      <button
+                        onClick={() => setCurrentPage(i + 1)}
+                        className="page-link"
+                      >
+                        {i + 1}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </>
+          )}
+        </div>
       </div>
+    </div>
   );
 };
 

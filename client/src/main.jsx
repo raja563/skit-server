@@ -18,7 +18,6 @@ import Update from './components/updateUser/Update.jsx'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
-import LoginSignup from './components/LoginSignup/LoginSignup.jsx'
 import Dashboard from './components/AdminDashboard/Dashboard.jsx'
 import FacultyDashboard from './components/Faculty/FacultyDashboard.jsx'
 import FacultyRegister from './components/Faculty/FacultyRegister.jsx'
@@ -56,14 +55,31 @@ import StaffForm from './components/Staff/StaffForm.jsx'
 import StaffList from './components/Staff/StaffList.jsx'
 import CareerForm from './components/Career/CareerForm.jsx'
 import CareerList from './components/Career/CareerList.jsx'
+import Admin from './components/AdminDashboard/Admin.jsx'
+import Signup from './components/AdminDashboard/Signup.jsx'
+import UserList from './components/AdminDashboard/UserList.jsx'
+import Login from './components/AdminDashboard/Login.jsx'
 let allRouter = createBrowserRouter([
   {
     path: '/',
     element: <Home />,
   },
   {
+    path: '/admin',
+    element: <Admin/>,
+    children:[
+      { index: true, element:<WelcomeStudent/> }, // 👈 Default route for /student/portal
+    { path: 'signup', element:<Signup/> },
+    { path: 'userls', element:<UserList/> },
+    ]
+  },
+  {
     path: '/about',
     element: <About />
+  },
+  {
+    path: '/faculty',
+    element: <Faculty/>
   },
   {
     path: '/gallery',
@@ -104,7 +120,7 @@ let allRouter = createBrowserRouter([
   },
   {
     path: '/login',
-    element: <LoginSignup />
+    element: <Login/>
   },
   {
     path: '/dashboard',
@@ -117,12 +133,26 @@ let allRouter = createBrowserRouter([
 
   },
   {
-    path: '/faculty/dashboard',
+    path: '/facdash',
     element: <FacultyDashboard />,
     children: [
     { index: true, element:<WelcomeStudent/> }, // 👈 Default route for /student/portal
     { path: 'register', element:<FacultyRegister/> },
     { path: 'getAll', element:<GetAllFaculty/> },
+   {
+  path: "/facdash/getAll/register/:id",
+  element: <FacultyRegister />,
+},
+{
+  path: "/facdash/getAll",
+  element: <GetAllFaculty />,
+},
+{
+  path: "/facdash",
+  element: <Navigate to="/facdash/getAll" replace />,
+},
+
+
   ]
   },
   {

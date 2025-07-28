@@ -11,13 +11,17 @@ const DecideExamFee = () => {
     student_id: "",
     session: "",
     course: "",
-    decidedexamfee: ""  // ✅ Match model field name
+    decidedexamfee: ""
   });
+
+  // ✅ API URL from environment
+  const STUDENT_API = `${import.meta.env.VITE_API_URL}/api/student/`;
+  const EXAM_FEE_API = `${import.meta.env.VITE_API_URL}/api/dEfee/`;
 
   useEffect(() => {
     (async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/api/student/");
+        const res = await axios.get(STUDENT_API);
         setStudents(
           res.data.map(stu => ({
             value: stu.student_id,
@@ -64,14 +68,14 @@ const DecideExamFee = () => {
       return toast.error("Enter a valid exam fee");
 
     const payload = {
-      student: decide.student_id,  // ✅ matches Django field
+      student: decide.student_id,
       session: decide.session,
       course: decide.course,
       decidedexamfee: parseFloat(decide.decidedexamfee)
     };
 
     try {
-      await axios.post("http://127.0.0.1:8000/api/dEfee/", payload);
+      await axios.post(EXAM_FEE_API, payload);
       toast.success("Exam fee saved!");
 
       setDecide({
@@ -91,65 +95,65 @@ const DecideExamFee = () => {
     <div className="fluid mx-4 mt-2">
       <div className="row">
         <div className="col-12">
-      <form
-        onSubmit={submitHandler}
-        className="bg-secondary p-3 rounded text-white"
-      >
-        <h2 className="bg-success text-center p-1 rounded">Decide Exam Fee</h2>
+          <form
+            onSubmit={submitHandler}
+            className="bg-secondary p-3 rounded text-white"
+          >
+            <h2 className="bg-success text-center p-1 rounded">Decide Exam Fee</h2>
 
-        <div className="row mt-3 ">
-          <div className="col-md-6">
-            <label>Student ID</label>
-            <Select
-              options={students}
-              value={decide.studentOption}
-              onChange={handleStudentChange}
-              placeholder="Search student"
-              className="text-dark"
-            />
-          </div>
+            <div className="row mt-3 ">
+              <div className="col-md-6">
+                <label>Student ID</label>
+                <Select
+                  options={students}
+                  value={decide.studentOption}
+                  onChange={handleStudentChange}
+                  placeholder="Search student"
+                  className="text-dark"
+                />
+              </div>
 
-          <div className="col-md-6">
-            <label>Session</label>
-            <input
-              type="text"
-              className="form-control bg-secondary-subtle"
-              name="session"
-              value={decide.session}
-              readOnly
-            />
-          </div>
+              <div className="col-md-6">
+                <label>Session</label>
+                <input
+                  type="text"
+                  className="form-control bg-secondary-subtle"
+                  name="session"
+                  value={decide.session}
+                  readOnly
+                />
+              </div>
+            </div>
+
+            <div className="row mt-2">
+              <div className="col-md-6">
+                <label>Course</label>
+                <input
+                  type="text"
+                  className="form-control bg-secondary-subtle"
+                  name="course"
+                  value={decide.course}
+                  readOnly
+                />
+              </div>
+
+              <div className="col-md-6">
+                <label>Exam Fee</label>
+                <input
+                  type="number"
+                  className="form-control bg-secondary-subtle"
+                  name="decidedexamfee"
+                  value={decide.decidedexamfee}
+                  onChange={handleInput}
+                  placeholder="Enter exam fee"
+                />
+              </div>
+            </div>
+
+            <button className="btn btn-primary mt-3">Submit</button>
+          </form>
         </div>
-
-        <div className="row mt-2">
-          <div className="col-md-6">
-            <label>Course</label>
-            <input
-              type="text"
-              className="form-control bg-secondary-subtle"
-              name="course"
-              value={decide.course}
-              readOnly
-            />
-          </div>
-
-          <div className="col-md-6">
-            <label>Exam Fee</label>
-            <input
-              type="number"
-              className="form-control bg-secondary-subtle"
-              name="decidedexamfee"  // ✅ Correct field name
-              value={decide.decidedexamfee}
-              onChange={handleInput}
-              placeholder="Enter exam fee"
-            />
-          </div>
-        </div>
-
-        <button className="btn btn-primary mt-3">Submit</button>
-      </form>
-    </div>
-    </div>
+      </div>
     </div>
   );
 };

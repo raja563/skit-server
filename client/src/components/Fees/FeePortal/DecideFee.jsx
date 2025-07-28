@@ -7,10 +7,14 @@ import Select from 'react-select';
 const DecideFee = () => {
   const navigate = useNavigate();
 
+  // ✅ Use environment variables for API
+  const STUDENT_API = `${import.meta.env.VITE_API_URL}/api/student/`;
+  const DECIDE_FEE_API = `${import.meta.env.VITE_API_URL}/api/decideFees/`;
+
   const [students, setStudents] = useState([]);
 
   const [decide, setDecide] = useState({
-    student: null,         // <-- changed from student_id
+    student: null,
     name: '',
     session: '',
     course: '',
@@ -18,13 +22,12 @@ const DecideFee = () => {
     totalfee: '',
   });
 
-  // Fetch all students on load
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/api/student/");
+        const res = await axios.get(STUDENT_API);
         const options = res.data.map(stu => ({
-          value: stu.student_id, // <- backend expects student_id string
+          value: stu.student_id,
           label: `${stu.student_id} - ${stu.name}`,
           name: stu.name,
           session: stu.session,
@@ -38,24 +41,21 @@ const DecideFee = () => {
     fetchStudents();
   }, []);
 
-  // Auto-calculate totalfee when decidedamt changes
   useEffect(() => {
     const total = parseFloat(decide.decidedamt) || 0;
     setDecide(prev => ({ ...prev, totalfee: total }));
   }, [decide.decidedamt]);
 
-  // Generic input change handler
   const inputHandle = (e) => {
     const { name, value } = e.target;
     setDecide(prev => ({ ...prev, [name]: value }));
   };
 
-  // On student selection
   const handleStudentChange = (selectedOption) => {
     if (selectedOption) {
       setDecide(prev => ({
         ...prev,
-        student: selectedOption,  // <--- Save entire selected option
+        student: selectedOption,
         name: selectedOption.name,
         session: selectedOption.session,
         course: selectedOption.course
@@ -72,7 +72,6 @@ const DecideFee = () => {
     }
   };
 
-  // Form submission handler
   const submitHandler = async (e) => {
     e.preventDefault();
 
@@ -82,15 +81,14 @@ const DecideFee = () => {
     }
 
     const postData = {
-      student: decide.student.value, // <- send student_id string
+      student: decide.student.value,
       session: decide.session,
       course: decide.course,
       decidedamt: parseFloat(decide.decidedamt),
-      // totalfee is calculated locally, not required in backend unless stored
     };
 
     try {
-      await axios.post("http://127.0.0.1:8000/api/decideFees/", postData);
+      await axios.post(DECIDE_FEE_API, postData);
       toast.success("Data saved successfully!", { position: "top-right" });
 
       setDecide({
@@ -183,6 +181,7 @@ const DecideFee = () => {
                   <button className="btn btn-primary">Submit</button>
                 </div>
               </div>
+
             </form>
           </div>
         </div>

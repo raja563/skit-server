@@ -1,5 +1,7 @@
 from .views import person, personDetail, login, enquiry, facultyRegister, student, studentLogin, facultyLogin
-from .views import RegisterView, LoginView, DashboardView
+from .views import (
+    RegisterView, UserLoginView, LogoutView, UserListView, UserDeleteView, ForgetPasswordView
+)
 from django.urls import path
 from .views import decideFees, syllabus, decideExamFees, decideHostelFees, decideTransportFees
 from .views import dpfees_list_create, dpfees_detail
@@ -15,22 +17,24 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     path('person/', person),
-    path('login/', login),
     path('enquiry/', enquiry, name="enquiry"),
     path('quickenq/', quick_enquiry, name="quick enquiry"),
     path('person_edit/<int:pk>/', personDetail, name='person-detail'),
     
+    path('register/', RegisterView.as_view()),
+    path('login/', UserLoginView.as_view(), name='user-login'),
+    path('logout/', LogoutView.as_view()),
+    path('users/', UserListView.as_view(), name='get-all-user'),
+    path('users/<int:pk>/delete/', UserDeleteView.as_view(), name='user-delete'),
+    # Forget password (reset with email)
+    path('users/forget-password/', ForgetPasswordView.as_view(), name='forget-password'),
     
-    path('user/register/', RegisterView.as_view(), name='register'),
-    path('user/login/', LoginView.as_view(), name='login'),
-    path('user/dashboard/', DashboardView.as_view(), name='dashboard'),
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-
     path('faculty/register/', views.facultyRegister),
     path('faculty/login/', views.facultyLogin),
     path('faculty/logout/', views.facultyLogout),
     path('faculty/reset-password/', views.facultyResetPassword),
+    path('faculty/<int:pk>/', views.facultyDetailUpdateDelete, name='get-update-delete-faculty'),
+    # syllabus 
     path("syllabus/", syllabus, name="syllabus"),
 
 

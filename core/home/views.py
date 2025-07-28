@@ -2,64 +2,84 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework import serializers, status
 from rest_framework.response import Response
-
-from home.models import Person, Enquiry, Faculty
-from .serializers import PersonSerializer, LoginSerializer, EnquirySerializer, FacultySerializer
-from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
-
-from rest_framework import generics
 from rest_framework.permissions import AllowAny
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.decorators import api_view, permission_classes
+
+
+from home.models import Person, Enquiry
+from .serializers import PersonSerializer, LoginSerializer, EnquirySerializer, FacultySerializer
+
+from rest_framework import generics, status, permissions
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
+from .serializers import RegisterSerializer, UserLoginSerializer, UserSerializer
+from django.contrib.auth import authenticate
 
-
-# login and signup view 
-
+# ✅ REGISTER
 class RegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    # permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
+    permission_classes = [permissions.AllowAny]
 
+# ✅ LOGIN
+class UserLoginView(APIView):
+    permission_classes = [permissions.AllowAny]
 
-class LoginView(generics.GenericAPIView):
-    serializer_class = RegisterSerializer
-    def post(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        user = authenticate(username = username, password = password)
-
-        if user is not None:
-            refresh = RefreshToken.for_user(user)
-            user_serializer = UserSerializer(user)
+    def post(self, request):
+        serializer = UserLoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            token, _ = Token.objects.get_or_create(user=user)
             return Response({
-                'refresh':str(refresh),
-                'access':str(refresh.access_token),
-                'user':user_serializer.data,
-                'msg':'login successfull'
+                "token": token.key,
+                "username": user.username,
+                "user_id": user.id,
             })
-        else:
-            Response({
-                'error':'invalid credentials'
-            })
+        return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+    
+# ✅ LOGOUT
+class LogoutView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
+    def post(self, request):
+        request.user.auth_token.delete()
+        return Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
 
-class DashboardView(APIView):
-    permission_classes = (IsAuthenticated,)
-    def get(self, request):
-        user = request.user
-        user_serializer = UserSerializer(user)
-        return Response({
-            'message':'Welcome to dashboard !',
-            'user':user_serializer.data
-        },200)
+# ✅ GET ALL USERS (NO AUTH REQUIRED)
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.AllowAny]
 
+# ✅ DELETE USER (WITH AUTH)
+class UserDeleteView(generics.DestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
+# ✅ FORGET PASSWORD (Reset Directly If Email Matches)
+class ForgetPasswordView(APIView):
+    permission_classes = [permissions.AllowAny]
 
+    def post(self, request):
+        email = request.data.get("email")
+        new_password = request.data.get("new_password")
+        confirm_password = request.data.get("confirm_password")
 
+        if not email or not new_password or not confirm_password:
+            return Response({"error": "All fields are required"}, status=status.HTTP_400_BAD_REQUEST)
 
+        if new_password != confirm_password:
+            return Response({"error": "Passwords do not match"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(email=email)
+            user.set_password(new_password)
+            user.save()
+            return Response({"message": "Password reset successful"}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"error": "Email not found"}, status=status.HTTP_404_NOT_FOUND)
 
 # Create your views here.
 @api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
@@ -150,6 +170,7 @@ def login(request):
      return Response(serializer.errors)
 
 @api_view(['POST','GET'])
+@permission_classes([AllowAny])
 def enquiry(request):
      if request.method == 'POST':
         
@@ -171,6 +192,7 @@ def enquiry(request):
 from .serializers import QuickEnquirySerializer
 from .models import QuickEnquiry
 @api_view(['GET', 'POST'])
+@permission_classes([AllowAny])
 def quick_enquiry(request):
     if request.method == 'GET':
         enquiries = QuickEnquiry.objects.all()
@@ -197,6 +219,7 @@ import uuid
 
 # ✅ Register
 @api_view(['POST', 'GET'])
+@permission_classes([AllowAny])
 def facultyRegister(request):
     if request.method == "POST":
         data = request.data
@@ -264,6 +287,29 @@ def facultyResetPassword(request):
         return Response({'msg': 'Password reset successful!'})
     except FacultyMember.DoesNotExist:
         return Response({'error': 'Email not found'}, status=404)
+
+
+@api_view(['GET', 'PATCH', 'DELETE'])
+def facultyDetailUpdateDelete(request, pk):
+    try:
+        faculty = FacultyMember.objects.get(pk=pk)
+    except FacultyMember.DoesNotExist:
+        return Response({"error": "Not found"}, status=404)
+
+    if request.method == 'GET':
+        serializer = FacultySerializer(faculty)
+        return Response(serializer.data)
+
+    elif request.method == 'PATCH':
+        serializer = FacultySerializer(faculty, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        faculty.delete()
+        return Response(status=204)
 
 # syllabus 
 

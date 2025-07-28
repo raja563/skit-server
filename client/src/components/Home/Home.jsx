@@ -1,13 +1,42 @@
-import  { useState } from 'react'
+import  { useState, useEffect } from 'react'
 import Header from '../Header/Header'
 import Footer from '../Footer/Footer'
 import './home.css'
 import Slider from '../Slider/Slider'
 import DarkSlider from '../DarkSlider/DarkSlider'
 import QuickEnquiry from './QuickEnquiry'
+import { FaUserGraduate, FaAward, FaBriefcase, FaUsers } from 'react-icons/fa';
 
+
+const stats = [
+{ icon: <FaUserGraduate />, target: 5000, label: 'Happy Enrolled Students' },
+{ icon: <FaAward />, target: 2000, label: 'Passed Students Awarded Degree from CSJM University' },
+{ icon: <FaBriefcase />, target: 1500, label: 'Placed Students Satisfied with SKIT Campus' },
+{ icon: <FaUsers />, target: 42, label: 'Experienced and Dedicated Staff' },
+];
 
 const Home = () => {
+
+
+  const [counts, setCounts] = useState(stats.map(() => 0));
+
+  useEffect(() => {
+    const intervals = stats.map((stat, i) => {
+      const increment = stat.target / 100;
+      return setInterval(() => {
+        setCounts(prevCounts => {
+          const newCounts = [...prevCounts];
+          if (newCounts[i] < stat.target) {
+            newCounts[i] = Math.min(newCounts[i] + Math.ceil(increment), stat.target);
+          }
+          return newCounts;
+        });
+      }, 30);
+    });
+
+    return () => intervals.forEach(clearInterval);
+  }, []);
+
 
 
   return (
@@ -19,6 +48,16 @@ const Home = () => {
 
           {/* model quick enquiry */}
           <QuickEnquiry/>
+
+          <section className="number-inc">
+            {stats.map((stat, index) => (
+              <div className="num-box" key={index}>
+                <div className="icon">{stat.icon}</div>
+                <h2>{counts[index]}+</h2>
+                <p>{stat.label}</p>
+              </div>
+            ))}
+          </section>
           
           <section className='learn-here-container '>
 

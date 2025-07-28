@@ -1,10 +1,9 @@
-// ======================== StaffForm.jsx ========================
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-const api = "http://127.0.0.1:8000/api/staff/";
+const api = `${import.meta.env.VITE_API_URL}/api/staff/`;
 
 const initialData = {
   name: "",
@@ -40,7 +39,7 @@ const StaffForm = () => {
         const { staff_id, ...rest } = res.data;
         setStaff({ ...initialData, ...rest, skills: res.data.skills || [] });
         if (res.data.profile) {
-          setProfilePreview(`http://127.0.0.1:8000${res.data.profile}`);
+          setProfilePreview(`${import.meta.env.VITE_API_URL}${res.data.profile}`);
         }
       });
     }
@@ -176,9 +175,7 @@ const StaffForm = () => {
         </h3>
         <form onSubmit={handleSubmit} className="text-light">
           <div className="row g-3">
-            {[
-              "name", "father", "address", "adhar", "mobile", "email"
-            ].map((field) => (
+            {["name", "father", "address", "adhar", "mobile", "email"].map((field) => (
               <div className="col-md-4" key={field}>
                 <div className="form-floating">
                   <input

@@ -1,28 +1,54 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './dashboard.css'; // make sure to add fade-in-up animation here or via inline style
+import toast from 'react-hot-toast';
+import './dashboard.css';
 
 const Dashboard = () => {
   const [total, setTotal] = useState(0);
   const [paid, setPaid] = useState(0);
   const [pending, setPending] = useState(0);
+  const navigate = useNavigate();
+
+  const logoutURL = `${import.meta.env.VITE_API_URL}/api/logout/`;
+
+  const decidedFeesURLs = {
+    acad: `${import.meta.env.VITE_API_URL}/api/decideFees/`,
+    exam: `${import.meta.env.VITE_API_URL}/api/dEfee/`,
+    host: `${import.meta.env.VITE_API_URL}/api/dHfee/`,
+    trans: `${import.meta.env.VITE_API_URL}/api/dTfee/`,
+  };
+
+  const paidFeesURLs = {
+    acad: `${import.meta.env.VITE_API_URL}/api/dpfees/`,
+    exam: `${import.meta.env.VITE_API_URL}/api/dpefee/`,
+    host: `${import.meta.env.VITE_API_URL}/api/dphfee/`,
+    trans: `${import.meta.env.VITE_API_URL}/api/dptfee/`,
+  };
+
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
+    if (!token) {
+      toast.error("Not logged in");
+      navigate('/login');
+      return;
+    }
+
     const fetchFees = async () => {
       try {
         const [
           acadDec, examDec, hostDec, transDec,
           acadDep, examDep, hostDep, transDep
         ] = await Promise.all([
-          axios.get("http://127.0.0.1:8000/api/decideFees/"),
-          axios.get("http://127.0.0.1:8000/api/dEfee/"),
-          axios.get("http://127.0.0.1:8000/api/dHfee/"),
-          axios.get("http://127.0.0.1:8000/api/dTfee/"),
-          axios.get("http://127.0.0.1:8000/api/dpfees/"),
-          axios.get("http://127.0.0.1:8000/api/dpefee/"),
-          axios.get("http://127.0.0.1:8000/api/dphfee/"),
-          axios.get("http://127.0.0.1:8000/api/dptfee/"),
+          axios.get(decidedFeesURLs.acad),
+          axios.get(decidedFeesURLs.exam),
+          axios.get(decidedFeesURLs.host),
+          axios.get(decidedFeesURLs.trans),
+          axios.get(paidFeesURLs.acad),
+          axios.get(paidFeesURLs.exam),
+          axios.get(paidFeesURLs.host),
+          axios.get(paidFeesURLs.trans),
         ]);
 
         const sum = (arr, key) =>
@@ -51,6 +77,46 @@ const Dashboard = () => {
     fetchFees();
   }, []);
 
+  // ✅ Enhanced logout confirmation using toast
+  const handleLogout = async () => {
+    toast((t) => (
+      <span>
+        Are you sure you want to logout?
+        <div className="mt-2 d-flex justify-content-end gap-2">
+          <button
+            className="btn btn-sm btn-danger"
+            onClick={async () => {
+              toast.dismiss(t.id);
+              try {
+                await axios.post(logoutURL, null, {
+                  headers: {
+                    Authorization: `Token ${token}`,
+                  },
+                });
+
+                localStorage.removeItem('token');
+                toast.success("Successfully logged out!");
+                navigate('/');
+              } catch (err) {
+                toast.error("Logout failed. Please try again.");
+              }
+            }}
+          >
+            Yes
+          </button>
+          <button
+            className="btn btn-sm btn-secondary"
+            onClick={() => toast.dismiss(t.id)}
+          >
+            Cancel
+          </button>
+        </div>
+      </span>
+    ), {
+      duration: 10000,
+    });
+  };
+
   const fmt = (n) => (isNaN(n) ? "0.00" : Number(n).toFixed(2));
 
   return (
@@ -58,37 +124,38 @@ const Dashboard = () => {
       <div className="row">
         {/* Header */}
         <div className="col-12 d-flex justify-content-between align-items-center py-3 px-4 border-bottom">
-          {/* <h2 className="text-primary m-0">Admin Panel</h2> */}
           <div className="text-secondary">
             Welcome to <span className="text-danger">Admin</span>
           </div>
+          <button onClick={handleLogout} className="btn btn-sm btn-danger">
+            Logout
+          </button>
         </div>
 
         {/* Sidebar */}
         <div className="col-sm-4 col-lg-3 text-white mt-3">
           <h4 className='text-white text-center'>Admin</h4>
           <ul className='sidebar'>
-            <li><Link to={'/'} className="text-warning">Back</Link></li>
+            <li><Link to='/' className="text-warning">Back</Link></li>
             <li className='nested-list'>Dashboard
               <ul className='nested-list-item'>
-                <li><Link to={'/faculty/dashboard'}>Faculty</Link></li>
-                <li><Link to={'/studash'}>Student</Link></li>
+                <li><Link to='/admin'>Admin</Link></li>
+                <li><Link to='/faculty/dashboard'>Faculty</Link></li>
+                <li><Link to='/studash'>Student</Link></li>
               </ul>
             </li>
             <li>Faculty</li>
-            <li><Link to={'/stpl'}>Staff</Link></li>
+            <li><Link to='/stpl'>Staff</Link></li>
             <li>Library</li>
             <li>Department</li>
-            <li>Courses</li>
+            <li><Link to={'/facultyPortal'}>Faculty Portel</Link></li>
+            <li><Link to={'/student/portal'}>Student Portel</Link></li>
             <li>Holiday</li>
           </ul>
         </div>
 
-        {/* Content */}
+        {/* Main Content */}
         <div className="col-sm-8 col-lg-9 mt-3">
-          {/* <h2 className='text-white text-center mb-4'>Dashboard</h2> */}
-
-          {/* ▼ New Summary Cards ▼ */}
           <div className="row g-4 mb-4 px-3 fade-in-up">
             <div className="col-md-4 col-sm-6">
               <Link to="/fees" className="text-decoration-none">
@@ -120,10 +187,9 @@ const Dashboard = () => {
               </Link>
             </div>
           </div>
-          {/* ▲ End of Summary Cards ▲ */}
 
+          {/* Dashboard Cards */}
           <div className="row g-4 px-3">
-            {/* Original dashboard cards remain below */}
             <div className="col-md-4 col-sm-6">
               <Link to="/studash" className="dash-card-link">
                 <div className="dash-card bg-gradient-primary">
@@ -143,7 +209,7 @@ const Dashboard = () => {
             </div>
 
             <div className="col-md-4 col-sm-6">
-              <Link to="/faculty/dashboard" className="dash-card-link">
+              <Link to="/facdash" className="dash-card-link">
                 <div className="dash-card bg-gradient-success">
                   <i className="fas fa-chalkboard-teacher fa-2x mb-1"></i>
                   <h5>Faculty</h5>
@@ -154,21 +220,21 @@ const Dashboard = () => {
             <div className="col-md-4 col-sm-6">
               <div className="dash-card bg-gradient-info">
                 <i className="fas fa-users fa-2x mb-1"></i>
-                <h5><Link to={'/stpl'}>Staff</Link></h5>
+                <h5><Link to='/stpl'>Staff</Link></h5>
               </div>
             </div>
 
             <div className="col-md-4 col-sm-6">
               <div className="dash-card bg-gradient-danger">
                 <i className="fas fa-question-circle fa-2x mb-1"></i>
-                <h5><Link to={'/enq'}>Enquiry</Link></h5>
+                <h5><Link to='/enq'>Enquiry</Link></h5>
               </div>
             </div>
 
             <div className="col-md-4 col-sm-6">
               <div className="dash-card bg-gradient-dark">
                 <i className="fas fa-book fa-2x mb-1"></i>
-                <h5><Link to={'/career_list'}>Career</Link></h5>
+                <h5><Link to='/career_list'>Career</Link></h5>
               </div>
             </div>
           </div>

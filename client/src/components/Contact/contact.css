@@ -149,3 +149,45 @@ textarea {
     width: 100%;
   }
 }
+
+.address-box {
+  background: linear-gradient(135deg, #f8f9fa, #e0eaff);
+  border-radius: 16px;
+  padding: 24px;
+  color: #222;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', sans-serif;
+  max-width: 600px;
+  margin: auto;
+  line-height: 1.6;
+}
+
+.address-box h3 {
+  color: #2c3e50;
+  margin-bottom: 12px;
+}
+
+.address-box h4 {
+  margin-top: 16px;
+  color: #34495e;
+}
+
+.address-box i {
+  margin-right: 8px;
+  color: #2e86de;
+}
+
+.address-box a {
+  color: #2e86de;
+  text-decoration: none;
+}
+
+.address-box a:hover {
+  text-decoration: underline;
+}
+
+.address-section {
+  margin-bottom: 16px;
+}
+
+

@@ -9,18 +9,20 @@ const DecidedList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  // ✅ Base URL from environment
+  const BASE_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [tuition, exam, hostel, transport, studentRes] = await Promise.all([
-          axios.get("http://127.0.0.1:8000/api/decideFees/"),
-          axios.get("http://127.0.0.1:8000/api/dEfee/"),
-          axios.get("http://127.0.0.1:8000/api/dHfee/"),
-          axios.get("http://127.0.0.1:8000/api/dTfee/"),
-          axios.get("http://127.0.0.1:8000/api/student/") // Student model data
+          axios.get(`${BASE_URL}/api/decideFees/`),
+          axios.get(`${BASE_URL}/api/dEfee/`),
+          axios.get(`${BASE_URL}/api/dHfee/`),
+          axios.get(`${BASE_URL}/api/dTfee/`),
+          axios.get(`${BASE_URL}/api/student/`) // Student model data
         ]);
 
-        // Map student_id -> { name, session, course }
         const studentMapData = new Map();
         studentRes.data.forEach(std => {
           studentMapData.set(std.student_id, {
@@ -84,7 +86,6 @@ const DecidedList = () => {
     <div className="fluid">
       <h4 className='text-center text-white p-1 bg-success'>Decided Fees List</h4>
 
-      {/* Filters */}
       <div className="d-flex gap-2 flex-wrap justify-content-between my-2">
         <input
           type="text"
@@ -119,7 +120,6 @@ const DecidedList = () => {
         </select>
       </div>
 
-      {/* Table */}
       <div className="table-responsive">
         <table className="table table-bordered table-striped">
           <thead>
@@ -157,7 +157,6 @@ const DecidedList = () => {
         </table>
       </div>
 
-      {/* Pagination */}
       <div className="d-flex justify-content-between align-items-center mt-3">
         <span>Page {currentPage} of {pageCount}</span>
         <div className="btn-group">

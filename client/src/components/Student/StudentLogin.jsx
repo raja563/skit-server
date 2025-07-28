@@ -6,13 +6,15 @@ import toast from 'react-hot-toast';
 const StudentLogin = () => {
   const navigate = useNavigate();
 
-  /* ── state ─────────────────────────────────────────────── */
+  // ✅ Set API URL from environment
+  const API = import.meta.env.VITE_API_URL;
+  const loginURL = `${API}/api/student/login/`;
+
   const [login, setLogin] = useState({
     email: '',
     dob: '',
   });
 
-  /* ── handlers ──────────────────────────────────────────── */
   const inputHandler = (e) => {
     const { name, value } = e.target;
     setLogin((prev) => ({ ...prev, [name]: value }));
@@ -27,14 +29,10 @@ const StudentLogin = () => {
     }
 
     try {
-      const { data } = await axios.post(
-        'http://127.0.0.1:8000/api/student/login/',
-        login
-      );
+      const { data } = await axios.post(loginURL, login);
 
-      /* Persist minimal session info */
       sessionStorage.setItem('studentEmail', login.email);
-      sessionStorage.setItem('studentDOB',   login.dob);
+      sessionStorage.setItem('studentDOB', login.dob);
 
       toast.success(data.msg, { position: 'top-right' });
       navigate('/student/portal');
@@ -48,7 +46,6 @@ const StudentLogin = () => {
     }
   };
 
-  /* ── UI ────────────────────────────────────────────────── */
   return (
     <div
       className="min-vh-100 d-flex justify-content-center align-items-center"
@@ -66,8 +63,8 @@ const StudentLogin = () => {
           boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
         }}
       >
-        <Link to="/" className="btn btn-warning mb-3">← Back</Link>
-        <h3 className="text-center text-white mb-3">Student Login</h3>
+        <Link to="/" className="btn btn-warning mb-3">← Back</Link>
+        <h3 className="text-center text-white mb-3">Student Login</h3>
         <div className="line mb-3" style={{ height: '2px', background: '#ccc' }} />
 
         <form onSubmit={submitHandler}>
@@ -84,7 +81,7 @@ const StudentLogin = () => {
           </div>
 
           <div className="form-group mb-4">
-            <label className="text-white">Date of Birth</label>
+            <label className="text-white">Date of Birth</label>
             <input
               type="date"
               name="dob"
@@ -95,7 +92,6 @@ const StudentLogin = () => {
           </div>
 
           <div className="d-flex justify-content-between">
-            {/* The button now submits the form correctly */}
             <button type="submit" className="btn btn-primary">Login</button>
           </div>
         </form>

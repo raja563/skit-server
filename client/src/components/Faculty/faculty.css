@@ -1,49 +1,82 @@
-.container{
-    display: flex;
-    margin: 50px;
-    justify-content:space-around;
-    flex-wrap: wrap;
+/* Faculty Main Container */
+.container {
+    padding: 40px 20px;
 }
-.faculty-box{
-    padding: 12px;
-    width: 350px;
-    height: 350px;
-    margin: 12px;
-    box-shadow: 0 0 4px 2px lightgrey;
+
+/* Faculty Card Box */
+.faculty-box {
+    background: #fff;
+    border-radius: 15px;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
     text-align: center;
-    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+    height: 100%;
 }
-.pro-img{
+
+.faculty-box:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Profile Image Styling */
+.pro-img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+    padding: 0;
+}
+
+.pro-img img {
     width: 120px;
     height: 120px;
-    margin: auto;
-    box-shadow: 0 0 4px 2px lightgrey;
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    border: 3px solid #dee2e6;
 }
-.pro-img img{
-    width: 100%;
-    height: 120px;
+
+/* Faculty Details */
+.pro-detail {
+    padding: 16px 10px 24px;
 }
-.pro-detail{
-    margin: 24px;
-}
-.name{
+
+.name {
     font-size: 22px;
     font-weight: 700;
-
+    color: #0d6efd;
+    margin-bottom: 6px;
 }
-.degree{
+
+.degree {
     font-size: 14px;
     font-weight: 600;
-    color:var(--sec-color);
-}
-.post{
-    font-size: 16px;
-    font-weight: 800;
-    color:rgba(255, 166, 0, 0.708);
+    color: #333;
+    margin-bottom: 4px;
 }
 
-.media{
-    display: flex;
-    gap: 12px;
-    justify-content: center;
+.post {
+    font-size: 16px;
+    font-weight: 600;
+    color: #555;
+}
+
+/* Modal Fix */
+.modal-body img {
+    border: 3px solid #0d6efd;
+}
+
+/* Responsive Card Padding and Layout */
+@media (max-width: 768px) {
+    .faculty-box {
+        margin-bottom: 20px;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .faculty-box {
+        margin-bottom: 24px;
+    }
 }

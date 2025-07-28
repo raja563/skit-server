@@ -3,6 +3,8 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import Select from "react-select";
 
+const API = import.meta.env.VITE_API_URL;
+
 const YEAR_SEMESTER = {
   First: ["I", "II"],
   Second: ["III", "IV"],
@@ -34,8 +36,8 @@ const DpHostelFee = () => {
     const fetchAll = async () => {
       try {
         const [hostelRes, studentRes] = await Promise.all([
-          axios.get("http://127.0.0.1:8000/api/dHfee/"),
-          axios.get("http://127.0.0.1:8000/api/student/"),
+          axios.get(`${API}/api/dHfee/`),
+          axios.get(`${API}/api/student/`),
         ]);
 
         const feeMap = new Map();
@@ -83,7 +85,7 @@ const DpHostelFee = () => {
     setSelectedStu(option);
 
     try {
-      const res = await axios.get("http://127.0.0.1:8000/api/dphfee/");
+      const res = await axios.get(`${API}/api/dphfee/`);
       const deposits = res.data.filter((d) => d.student === option.value);
       const paid = deposits.reduce(
         (sum, item) => sum + parseFloat(item.dphostelfees || 0),
@@ -155,7 +157,7 @@ const DpHostelFee = () => {
     };
 
     try {
-      const res = await axios.post("http://127.0.0.1:8000/api/dphfee/", payload);
+      const res = await axios.post(`${API}/api/dphfee/`, payload);
       toast.success(`Saved! Receipt No: ${res.data.receipt}`);
       setSelectedStu(null);
       setForm(blankForm);

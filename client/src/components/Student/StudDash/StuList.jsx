@@ -9,6 +9,9 @@ import { Modal, Button } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 
 const StuList = () => {
+  const API = import.meta.env.VITE_API_URL;
+  const getStudentsURL = `${API}/api/student/`;
+
   const [students, setStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [courseFilter, setCourseFilter] = useState('');
@@ -19,8 +22,6 @@ const StuList = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
-
-  const getStudentsURL = 'http://127.0.0.1:8000/api/student/';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,7 +45,7 @@ const StuList = () => {
 
   const exportToExcel = () => {
     const ws = XLSX.utils.json_to_sheet(filtered.map(stu => ({
-      'Student ID': stu.student_id,
+      'Student ID': stu.id,
       'Name': stu.name,
       'DOB': stu.dob,
       'Address': stu.address,
@@ -63,7 +64,7 @@ const StuList = () => {
     autoTable(doc, {
       head: [['Student ID', 'Name', 'DOB', 'Address', 'Email', 'Phone', 'Course', 'Batch']],
       body: filtered.map(stu => [
-        stu.student_id, stu.name, stu.dob, stu.address,
+        stu.id, stu.name, stu.dob, stu.address,
         stu.email, stu.mobile, stu.course, stu.session
       ]),
       styles: { fontSize: 8 },
@@ -79,11 +80,10 @@ const StuList = () => {
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this student?")) return;
-
     try {
-      const res = await axios.delete(`http://127.0.0.1:8000/api/student/${id}/`);
+      const res = await axios.delete(`${API}/api/student/${id}/`);
       toast.success(res.data.msg || "Student deleted successfully!");
-      setStudents(students.filter(s => s.student_id !== id));
+      setStudents(students.filter(s => s.id !== id));
     } catch (err) {
       if (err.response && err.response.status === 400) {
         toast.error(err.response.data.msg || "Student is linked to another table", {
@@ -167,8 +167,8 @@ const StuList = () => {
               <tr><td colSpan="8" className="text-center">No students found</td></tr>
             ) : (
               displayed.map((student, index) => (
-                <tr key={student.student_id}>
-                  <th scope='row'>{student.student_id}</th>
+                <tr key={student.id}>
+                  <th scope='row'>{student.id}</th>
                   <td>{student.name}</td>
                   <td>{student.dob}</td>
                   <td>{student.address}</td>
@@ -187,11 +187,11 @@ const StuList = () => {
                         <div className="position-absolute bg-light border rounded p-1 shadow"
                           style={{ top: '100%', left: 0, zIndex: 10, minWidth: 100 }}>
                           <button className="btn btn-sm btn-outline-danger d-block w-100 mb-1"
-                            onClick={() => handleDelete(student.student_id)}>
+                            onClick={() => handleDelete(student.id)}>
                             <FaTrash />
                           </button>
 
-                          <Link to={`stuadd/${student.student_id}`} className="btn btn-sm btn-outline-info d-block w-100">
+                          <Link to={`stuadd/${student.id}`} className="btn btn-sm btn-outline-info d-block w-100">
                             <FaEdit />
                           </Link>
 
@@ -241,19 +241,19 @@ const StuList = () => {
             <div className="row">
               <div className="col-md-4 text-center">
                 <img
-                  src={`http://127.0.0.1:8000${selectedStudent.image}`}
+                  src={`${API}${selectedStudent.image}`}
                   alt="Profile"
                   className="img-fluid rounded shadow"
                 />
                 <p className="mt-2"><strong>Signature:</strong></p>
                 <img
-                  src={`http://127.0.0.1:8000${selectedStudent.sign}`}
+                  src={`${API}${selectedStudent.sign}`}
                   alt="Signature"
                   className="img-fluid rounded shadow"
                 />
               </div>
               <div className="col-md-8">
-                <p><strong>Roll No.:</strong> {selectedStudent.student_id}</p>
+                <p><strong>Roll No.:</strong> {selectedStudent.id}</p>
                 <p><strong>Name:</strong> {selectedStudent.name}</p>
                 <p><strong>Father's Name:</strong> {selectedStudent.father}</p>
                 <p><strong>Gender:</strong> {selectedStudent.gender}</p>

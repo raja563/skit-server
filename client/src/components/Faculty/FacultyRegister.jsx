@@ -1,181 +1,226 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
-import './facultyregister.css';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import toast from "react-hot-toast";
+
+const api = `${import.meta.env.VITE_API_URL}/api/faculty/`;
+
+const initialData = {
+  fullname: "",
+  fname: "",
+  gender: "",
+  dobirth: "",
+  address: "",
+  mobile: "",
+  email: "",
+  qualification: "",
+  department: "",
+  dojoin: "",
+  password: "",
+  profile: null,
+  resume: null,
+};
 
 const FacultyRegister = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
+  const [faculty, setFaculty] = useState(initialData);
+  const [profilePreview, setProfilePreview] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
 
-  const initialState = {
-    fullname: '',
-    fname: '',
-    gender: '',
-    dobirth: '',
-    address: '',
-    mobile: '',
-    email: '',
-    qualification: '',
-    department: '',
-    dojoin: '',
-    password: '',
-  };
+  useEffect(() => {
+    if (id) {
+      setIsEditMode(true);
+      axios
+        .get(`${api}${id}/`)
+        .then((res) => {
+          const data = res.data;
+          setFaculty({
+            fullname: data.fullname || "",
+            fname: data.fname || "",
+            gender: data.gender || "",
+            dobirth: data.dobirth?.split("T")[0] || "",
+            address: data.address || "",
+            mobile: data.mobile || "",
+            email: data.email || "",
+            qualification: data.qualification || "",
+            department: data.department || "",
+            dojoin: data.dojoin?.split("T")[0] || "",
+            password: "", // Don't prefill password
+            profile: null,
+            resume: null,
+          });
 
-  const [faculty, setFaculty] = useState(initialState);
-  const [profile, setProfile] = useState(null);
-  const [resume, setResume] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
+          if (data.profile) {
+            setProfilePreview(`${import.meta.env.VITE_API_URL}${data.profile}`);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          toast.error("Failed to fetch faculty data");
+        });
+    }
+  }, [id]);
 
-  const inputHandler = (e) => {
-    const { name, value } = e.target;
-    setFaculty({ ...faculty, [name]: value });
-  };
+  const handleChange = (e) => {
+    const { name, value, type, files } = e.target;
 
-  const fileHandler = (e) => {
-    const { name, files } = e.target;
-    if (name === 'profile') {
-      setProfile(files[0]);
-      setPreviewUrl(URL.createObjectURL(files[0]));
-    } else if (name === 'resume') {
-      setResume(files[0]);
+    if (type === "file") {
+      const file = files[0];
+      setFaculty((prev) => ({ ...prev, [name]: file }));
+
+      if (name === "profile") {
+        const reader = new FileReader();
+        reader.onloadend = () => setProfilePreview(reader.result);
+        reader.readAsDataURL(file);
+      }
+    } else {
+      setFaculty((prev) => ({ ...prev, [name]: value }));
     }
   };
-
-  const registerURL = `${import.meta.env.VITE_API_URL}/api/faculty/register/`;
 
   const validateForm = () => {
-    const emailRegex = /\S+@\S+\.\S+/;
-    const mobileRegex = /^[0-9]{10}$/;
+    const requiredFields = [
+      "fullname", "fname", "gender", "dobirth", "address",
+      "mobile", "email", "qualification", "department", "dojoin"
+    ];
 
-    if (!faculty.fullname || !faculty.fname || !faculty.gender || !faculty.dobirth ||
-        !faculty.address || !faculty.mobile || !faculty.email || !faculty.qualification ||
-        !faculty.department || !faculty.dojoin || !faculty.password) {
-      toast.error("All fields are required!");
+    for (let field of requiredFields) {
+      if (!faculty[field]) {
+        toast.error(`${field} is required`);
+        return false;
+      }
+    }
+
+    if (!/^\d{10}$/.test(faculty.mobile)) {
+      toast.error("Mobile must be 10 digits");
       return false;
     }
 
-    if (!emailRegex.test(faculty.email)) {
-      toast.error("Invalid email format!");
-      return false;
-    }
-
-    if (!mobileRegex.test(faculty.mobile)) {
-      toast.error("Mobile number must be 10 digits!");
-      return false;
-    }
-
-    if (faculty.password.length < 6) {
-      toast.error("Password must be at least 6 characters!");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(faculty.email)) {
+      toast.error("Invalid email format");
       return false;
     }
 
     return true;
   };
 
-  const submitHandler = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     const formData = new FormData();
-    Object.entries(faculty).forEach(([key, value]) => formData.append(key, value));
-    if (profile) formData.append('profile', profile);
-    if (resume) formData.append('resume', resume);
+    for (const key in faculty) {
+      if (faculty[key]) {
+        formData.append(key, faculty[key]);
+      }
+    }
 
     try {
-      const response = await axios.post(registerURL, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      toast.success(response.data.msg || "Faculty registered successfully!", { position: 'top-right' });
-      navigate('/faculty/login');
-    } catch (error) {
-      console.error(error);
-      toast.error(error.response?.data?.msg || "Registration failed.", { position: 'top-right' });
+      if (isEditMode) {
+        await axios.patch(`${api}${id}/`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        toast.success("Faculty updated successfully!");
+      } else {
+        await axios.post(`${api}register/`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        toast.success("Faculty registered successfully!");
+      }
+
+      setFaculty(initialData);
+      setProfilePreview(null);
+      navigate("/facdash/getAll");
+    } catch (err) {
+      console.error(err.response?.data || err);
+      const errors = err.response?.data;
+      if (typeof errors === "object") {
+        Object.entries(errors).forEach(([key, value]) => {
+          toast.error(`${key}: ${value}`);
+        });
+      } else {
+        toast.error("Form submission failed");
+      }
     }
   };
 
   return (
-    <div className="fluid dark">
-      <div className="row justify-content-center">
-        <div className="col-lg-10">
-          <div className="card shadow-lg border-0 faculty-card-3d">
-            <div className="card-header bg-success text-white text-center  rounded-top">
-              <h3 className="mb-0">Faculty Registration</h3>
-            </div>
-            <div className="card-body bg-secondary text-light">
-              <form onSubmit={submitHandler} encType="multipart/form-data">
-                <div className="row g-3">
-                  <div className="col-md-6">
-                    <input type="text" name="fullname" className="form-control" placeholder="Full Name" onChange={inputHandler} required />
-                  </div>
-                  <div className="col-md-6">
-                    <input type="text" name="fname" className="form-control" placeholder="Father's Name" onChange={inputHandler} required />
-                  </div>
-                  <div className="col-md-6">
-                    <label className="form-label d-block">Gender:</label>
-                    <div className="form-check form-check-inline text-light">
-                      <input className="form-check-input" type="radio" name="gender" value="Male" onChange={inputHandler} required />
-                      <label className="form-check-label">Male</label>
-                    </div>
-                    <div className="form-check form-check-inline text-light">
-                      <input className="form-check-input" type="radio" name="gender" value="Female" onChange={inputHandler} required />
-                      <label className="form-check-label">Female</label>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <label className="form-label">Date of Birth:</label>
-                    <input type="date" name="dobirth" className="form-control" onChange={inputHandler} required />
-                  </div>
-                  <div className="col-md-6">
-                    <input type="text" name="address" className="form-control" placeholder="Address" onChange={inputHandler} required />
-                  </div>
-                  <div className="col-md-6">
-                    <input type="text" name="mobile" className="form-control" placeholder="Mobile No." onChange={inputHandler} required />
-                  </div>
-                  <div className="col-md-6">
-                    <input type="email" name="email" className="form-control" placeholder="Email" onChange={inputHandler} required />
-                  </div>
-                  <div className="col-md-6">
-                    <input type="password" name="password" className="form-control" placeholder="Password" onChange={inputHandler} required />
-                  </div>
-                  <div className="col-md-6">
-                    <input type="text" name="qualification" className="form-control" placeholder="Higher Qualification" onChange={inputHandler} required />
-                  </div>
-                  <div className="col-md-6">
-                    <select name="department" className="form-select" onChange={inputHandler} required>
-                      <option value="">Select Department</option>
-                      <option value="BBA">BBA</option>
-                      <option value="BCA">BCA</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-                  <div className="col-md-6">
-                    <label className="form-label">Date of Joining:</label>
-                    <input type="date" name="dojoin" className="form-control" onChange={inputHandler} required />
-                  </div>
-
-                  {/* Profile Image */}
-                  <div className="col-md-6">
-                    <label className="form-label">Upload Profile Image</label>
-                    <input type="file" name="profile" accept="image/*" className="form-control" onChange={fileHandler} />
-                    {previewUrl && (
-                      <img src={previewUrl} alt="Preview" className="img-preview mt-2 rounded border" width="100" />
-                    )}
-                  </div>
-
-                  {/* Resume Upload */}
-                  <div className="col-md-6">
-                    <label className="form-label">Upload Resume (PDF)</label>
-                    <input type="file" name="resume" accept="application/pdf" className="form-control" onChange={fileHandler} />
-                  </div>
-
-                  <div className="col-12 text-center mt-1">
-                    <button type="submit" className="btn btn-success w-50 shadow">Submit</button>
-                  </div>
+    <div className="container-fluid py-4" style={{ background: "#001F3F", color: "#fff", minHeight: "100vh" }}>
+      <div className="mx-auto p-4 rounded shadow-lg" style={{ background: "#112240", maxWidth: "1000px" }}>
+        <h3 className="text-center bg-primary p-2 rounded-pill text-white shadow mb-4">
+          {isEditMode ? "Edit Faculty" : "Faculty Registration"}
+        </h3>
+        <form onSubmit={handleSubmit} className="text-light">
+          <div className="row g-3">
+            {["fullname", "fname", "address", "mobile", "email", "qualification", "department", "password"].map((field) => (
+              <div className="col-md-4" key={field}>
+                <div className="form-floating">
+                  <input
+                    type={field === "password" ? "password" : "text"}
+                    name={field}
+                    value={faculty[field]}
+                    onChange={handleChange}
+                    className="form-control bg-dark text-white border-info shadow-sm"
+                    placeholder={field}
+                  />
+                  <label className="text-white">
+                    {field[0].toUpperCase() + field.slice(1)}
+                  </label>
                 </div>
-              </form>
+              </div>
+            ))}
+
+            <div className="col-md-4">
+              <label className="form-label text-white">Gender</label>
+              {["Male", "Female", "Other"].map((g) => (
+                <div className="form-check form-check-inline" key={g}>
+                  <input className="form-check-input" type="radio" name="gender" value={g} checked={faculty.gender === g} onChange={handleChange} />
+                  <label className="form-check-label text-white">{g}</label>
+                </div>
+              ))}
+            </div>
+
+            <div className="col-md-4">
+              <label className="form-label text-white">Date of Birth</label>
+              <input type="date" name="dobirth" value={faculty.dobirth} onChange={handleChange} className="form-control bg-dark text-white border-info shadow-sm" />
+            </div>
+
+            <div className="col-md-4">
+              <label className="form-label text-white">Date of Joining</label>
+              <input type="date" name="dojoin" value={faculty.dojoin} onChange={handleChange} className="form-control bg-dark text-white border-info shadow-sm" />
+            </div>
+
+            <div className="col-md-4">
+              <label className="form-label text-white">Upload Profile</label>
+              <input type="file" name="profile" accept="image/*" className="form-control bg-dark text-white border-info shadow-sm" onChange={handleChange} />
+              {profilePreview && (
+                <img src={profilePreview} alt="Preview" className="img-thumbnail mt-2" style={{ width: "100px", height: "100px", borderRadius: "8px" }} />
+              )}
+            </div>
+
+            <div className="col-md-4">
+              <label className="form-label text-white">Upload Resume</label>
+              <input type="file" name="resume" className="form-control bg-dark text-white border-info shadow-sm" onChange={handleChange} />
             </div>
           </div>
-        </div>
+
+          <div className="text-center mt-4">
+            <button type="submit" className="btn btn-success me-3">
+              {isEditMode ? "Update" : "Submit"}
+            </button>
+            <button
+              type="reset"
+              className="btn btn-warning"
+              onClick={() => {
+                setFaculty(initialData);
+                setProfilePreview(null);
+              }}
+            >
+              Reset
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

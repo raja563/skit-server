@@ -11,15 +11,19 @@ const DecideHostelFee = () => {
     name: '',
     session: '',
     course: '',
-    decidedhostelfee: '',  // ✅ fixed name
+    decidedhostelfee: '',
     totalfee: '',
   });
+
+  // ✅ Define API URLs using environment variables
+  const STUDENT_API = `${import.meta.env.VITE_API_URL}/api/student/`;
+  const HOSTEL_FEE_API = `${import.meta.env.VITE_API_URL}/api/dHfee/`;
 
   // Fetch all students on load
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/api/student/");
+        const res = await axios.get(STUDENT_API);
         const options = res.data.map(stu => ({
           value: stu.student_id,
           label: `${stu.student_id} - ${stu.name}`,
@@ -87,14 +91,14 @@ const DecideHostelFee = () => {
     }
 
     const postData = {
-      student: decide.studentId.value, // must match your foreign key
+      student: decide.studentId.value,
       session: decide.session,
       course: decide.course,
       decidedhostelfee: parseFloat(decide.decidedhostelfee),
     };
 
     try {
-      await axios.post("http://127.0.0.1:8000/api/dHfee/", postData); // ✅ use correct URL
+      await axios.post(HOSTEL_FEE_API, postData);
       toast.success("Hostel fee saved successfully!");
 
       setDecide({
@@ -173,7 +177,7 @@ const DecideHostelFee = () => {
                   <input
                     type="number"
                     className="form-control bg-secondary-subtle"
-                    name="decidedhostelfee" // ✅ fixed
+                    name="decidedhostelfee"
                     value={decide.decidedhostelfee}
                     onChange={inputHandle}
                     placeholder='Enter Hostel Fees'

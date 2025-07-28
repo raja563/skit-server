@@ -11,15 +11,19 @@ const DecideTFees = () => {
     name: '',
     session: '',
     course: '',
-    decidedtransportfee: '', // ✅ match Django model
+    decidedtransportfee: '',
     totalfee: '',
   });
+
+  // ✅ Define API URLs from environment variables
+  const STUDENT_API = `${import.meta.env.VITE_API_URL}/api/student/`;
+  const TRANSPORT_FEE_API = `${import.meta.env.VITE_API_URL}/api/dTfee/`;
 
   // Fetch all students
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/api/student/");
+        const res = await axios.get(STUDENT_API);
         const options = res.data.map(stu => ({
           value: stu.student_id,
           label: `${stu.student_id} - ${stu.name}`,
@@ -84,7 +88,7 @@ const DecideTFees = () => {
     };
 
     try {
-      await axios.post("http://127.0.0.1:8000/api/dTfee/", postData); // ✅ correct endpoint
+      await axios.post(TRANSPORT_FEE_API, postData);
       toast.success("Transportation fee saved successfully!");
 
       setDecide({

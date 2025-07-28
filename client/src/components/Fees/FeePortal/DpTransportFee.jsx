@@ -3,6 +3,8 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import Select from "react-select";
 
+const API = import.meta.env.VITE_API_URL;
+
 const YEAR_SEMESTER = {
   First: ["I", "II"],
   Second: ["III", "IV"],
@@ -34,8 +36,8 @@ const DpTransportFee = () => {
     const fetchAll = async () => {
       try {
         const [transportRes, studentRes] = await Promise.all([
-          axios.get("http://127.0.0.1:8000/api/dTfee/"),
-          axios.get("http://127.0.0.1:8000/api/student/"),
+          axios.get(`${API}/api/dTfee/`),
+          axios.get(`${API}/api/student/`),
         ]);
 
         const feeMap = new Map();
@@ -83,7 +85,7 @@ const DpTransportFee = () => {
     setSelectedStu(option);
 
     try {
-      const res = await axios.get("http://127.0.0.1:8000/api/dptfee/");
+      const res = await axios.get(`${API}/api/dptfee/`);
       const deposits = res.data.filter((d) => d.student === option.value);
       const paid = deposits.reduce(
         (sum, item) => sum + parseFloat(item.dpTransportfees || 0),
@@ -157,7 +159,7 @@ const DpTransportFee = () => {
     console.log("Submitting Payload =>", payload);
 
     try {
-      const res = await axios.post("http://127.0.0.1:8000/api/dptfee/", payload);
+      const res = await axios.post(`${API}/api/dptfee/`, payload);
       toast.success(`Saved! Receipt No: ${res.data.receipt}`);
       setSelectedStu(null);
       setForm(blankForm);
@@ -171,10 +173,10 @@ const DpTransportFee = () => {
   const fix2 = (n) => Number(n || 0).toFixed(2);
 
   return (
-    <div className="container mt-4">
+    <div className="fluid mt-4">
       <h2 className="text-center bg-success text-white p-2 rounded">Deposit Transport Fees</h2>
       <form onSubmit={handleSubmit} className="bg-secondary text-white p-4 rounded">
-        <div className="row mb-3">
+        <div className="row mb-1">
           <div className="col-md-6">
             <label>Student</label>
             <Select
@@ -319,7 +321,7 @@ const DpTransportFee = () => {
           )}
         </div>
 
-        <div className="text-center mt-3">
+        <div className="text-center mt-1">
           <button type="submit" className="btn btn-primary w-50" disabled={isLocked}>
             Submit
           </button>

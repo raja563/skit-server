@@ -3,6 +3,8 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import Select from "react-select";
 
+const API = import.meta.env.VITE_API_URL;
+
 const YEAR_SEMESTER = {
   First: ["I", "II"],
   Second: ["III", "IV"],
@@ -49,8 +51,8 @@ const DpExamFee = () => {
     (async () => {
       try {
         const [examRes, studentRes] = await Promise.all([
-          axios.get("http://127.0.0.1:8000/api/dEfee/"),
-          axios.get("http://127.0.0.1:8000/api/student/"),
+          axios.get(`${API}/api/dEfee/`),
+          axios.get(`${API}/api/student/`),
         ]);
 
         const feeMap = new Map();
@@ -87,7 +89,7 @@ const DpExamFee = () => {
     setSelectedStu(option);
 
     try {
-      const res = await axios.get("http://127.0.0.1:8000/api/dpefee/");
+      const res = await axios.get(`${API}/api/dpefee/`);
       const allDeposits = res.data;
       const studentDeposits = allDeposits.filter((d) => d.student === option.value);
 
@@ -163,7 +165,7 @@ const DpExamFee = () => {
     };
 
     try {
-      await axios.post("http://127.0.0.1:8000/api/dpefee/", payload);
+      await axios.post(`${API}/api/dpefee/`, payload);
       toast.success(`Saved! Receipt ${receiptNo}`);
       setSelectedStu(null);
       setForm(blankForm);
@@ -178,7 +180,7 @@ const DpExamFee = () => {
   const fix2 = (v) => (v === "" ? "" : Number(v).toFixed(2));
 
   return (
-    <div className="container my-4">
+    <div className="fluid mt-4">
       <div className="row justify-content-center">
         <div className="col-md-11">
           <h2 className="text-center bg-success text-white p-2 rounded">

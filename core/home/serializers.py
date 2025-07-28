@@ -1,35 +1,45 @@
 from rest_framework import serializers
 from .models import Person, Enquiry, Faculty, Student, Syllabus
 from rest_framework.response import Response
-
+from rest_framework import serializers
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 
+# REGISTER
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+    confirm_password = serializers.CharField(write_only=True, style={'input_type': 'password'})
 
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'password', 'confirm_password']
 
+    def validate(self, data):
+        if data['password'] != data['confirm_password']:
+            raise serializers.ValidationError({"password": "Passwords do not match."})
+        return data
+
+    def create(self, validated_data):
+        validated_data.pop('confirm_password')
+        return User.objects.create_user(**validated_data)
+
+# LOGIN
+class UserLoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+
+    def validate(self, data):
+        user = authenticate(username=data.get("username"), password=data.get("password"))
+        if user and user.is_active:
+            data['user'] = user
+            return data
+        raise serializers.ValidationError("Invalid credentials or inactive user.")
+    
+# USER DETAILS
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email')
-
-
-class RegisterSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('username', 'email', 'password', 'date_joined')
-    def create(self, validated_data):
-        user = User.objects.create_user(
-            validated_data['username'],
-            validated_data['email'],
-            validated_data['password']
-        )
-        return user
-
-class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField(required=True)
-    password = serializers.CharField(required=True, write_only = True)
-
-
-
+        fields = ['id', 'username', 'email']
 
 
 class PersonSerializer(serializers.ModelSerializer):

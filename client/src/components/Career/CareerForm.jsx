@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const CareerForm = () => {
+  const navigate = useNavigate();
 
-  let navigate=useNavigate(); 
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -32,11 +31,22 @@ const CareerForm = () => {
     const data = new FormData();
     Object.entries(formData).forEach(([key, value]) => data.append(key, value));
 
+    const careerURL = `${import.meta.env.VITE_API_URL}/api/career/`;
+
     try {
-      await axios.post('http://127.0.0.1:8000/api/career/', data);
+      await axios.post(careerURL, data);
       toast.success('Application submitted!');
       navigate('/');
-      setFormData({ name: '', address: '', phone: '', email: '', position_applied: '', qualification: '', experience: '', resume: null });
+      setFormData({
+        name: '',
+        address: '',
+        phone: '',
+        email: '',
+        position_applied: '',
+        qualification: '',
+        experience: '',
+        resume: null
+      });
     } catch (err) {
       toast.error('Submission failed!');
     }
