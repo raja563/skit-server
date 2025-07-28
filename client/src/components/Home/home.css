@@ -56,6 +56,7 @@ main {
   gap: 20px;
 }
 
+
 @media (min-width: 768px) {
   .main-img-container {
     flex-direction: row;
@@ -75,35 +76,67 @@ main {
   font-size: 18px;
 }
 
+
 .box-container {
   margin-top: 40px;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 30px;
+  padding: 20px;
 }
 
 .learn-box {
-  width: 180px;
-  height: 160px;
-  background-color: var(--main-color);
-  border-radius: 10px;
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  width: 250px;
+  min-height: 180px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  padding: 30px 20px;
   text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.4s ease;
+  transition: all 0.4s ease-in-out;
+  color: #333;
+  position: relative;
+  overflow: hidden;
+}
+
+.learn-box::before {
+  content: '';
+  position: absolute;
+  width: 150%;
+  height: 150%;
+  background: linear-gradient(135deg, rgba(0, 153, 255, 0.15), rgba(255, 0, 153, 0.15));
+  top: -25%;
+  left: -25%;
+  z-index: 0;
+  transform: rotate(0deg);
+  transition: transform 0.5s ease-in-out;
+}
+
+.learn-box:hover::before {
+  transform: rotate(15deg);
 }
 
 .learn-box:hover {
-  transform: rotateY(10deg) scale(1.05);
-  background-color: #04a49d;
+  transform: translateY(-12px) scale(1.07);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+.learn-box i {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+  color:white;
+  z-index: 1;
+  position: relative;
 }
 
 .learn-box p {
-  font-size: 18px;
-  font-weight: bold;
+  font-size: 1.1rem;
+  font-weight: 600;
+  z-index: 1;
+  position: relative;
 }
 
 
@@ -210,39 +243,91 @@ main {
 }
 
 
+.feature-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: linear-gradient(145deg, #ffffff, #f0f0f0);
+  box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
+}
+
+.feature-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+}
+
+
+
 /* =============================
    ✦ Testimonials
-   ============================= */
-.testimonials-box-container {
-  padding: 20px;
+ */
+ .testimonials-box-container {
+  padding: 40px 20px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 20px;
+  gap: 30px;
+  background: linear-gradient(145deg, #f9f9f9, #e8e8e8);
 }
 
 .testimonial-box {
   width: 300px;
-  padding: 20px;
+  min-height: 350px;
+  padding:15px 20px;
   border-radius: 12px;
-  background-color: #fff;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 10px 15px 30px rgba(0, 0, 0, 0.15);
   text-align: center;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  position: relative;
 }
 
+.testimonial-box:hover {
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+
 .pro-img img {
-  width: 80px;
-  height: 80px;
+  width: 100%;
+  height: 100px;
   border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #0d6efd;
+  transition: transform 0.3s ease;
+}
+
+.pro-img img:hover {
+  transform: scale(1.05);
 }
 
 .pro-name h3 {
-  font-size: 18px;
+  font-size: 20px;
+  color: #333;
 }
 
-.pro-list {
-  font-size: 30px;
-  color: var(--main-color);
+.pro-name p {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 0;
+}
+
+.pro-star i {
+  font-size: 20px;
+  margin: 0 2px;
+}
+
+.pro-list ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.pro-list li {
+  font-size: 15px;
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 4px;
 }
 
 
@@ -253,33 +338,91 @@ main {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 20px;
-  padding: 20px;
+  gap: 24px;
+  padding: 40px 20px;
+  background: linear-gradient(to bottom right, #f0f8ff, #e6f0ff);
 }
 
+/* Card box */
 .bright-star-box {
   width: 300px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
   overflow: hidden;
-  transition: transform 0.4s ease;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  cursor: pointer;
 }
 
 .bright-star-box:hover {
-  transform: rotateY(5deg) scale(1.03);
+  transform: rotateY(6deg) scale(1.05);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.2);
 }
 
-.star-img img {
-  width: 100%;
-  height: 250px;
-  object-fit: cover;
+/* Image section */
+.br-star-img {
+  width:100%;
+  height: auto ;
+  overflow: hidden ;
+  background: #f8f8f8 ;
+  text-align: center ;
+  display: flex ;
+  align-items: center ;
+  justify-content: center ;
 }
 
+.br-star-img img {
+  width:100% ;
+  height:220px ; /* Fixed height */
+  transform: perspective(800px) rotateX(2deg) ;
+  transition: transform 0.4s ease-in-out ;
+  display: block ;
+}
+
+.bright-star-box:hover .br-star-img img {
+  transform: perspective(800px) rotateX(0deg) scale(1.05) ;
+}
+
+
+/* Text section */
 .star-name {
   text-align: center;
-  padding: 12px;
+  padding: 16px;
+  background: #ffffff;
 }
+
+.star-name h4 {
+  color: #007bff;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.star-name .post {
+  font-size: 1rem;
+  color: #28a745;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.star-name .sector {
+  font-size: 0.9rem;
+  color: #888;
+  font-style: italic;
+}
+
+.star-name .batch {
+  font-weight: 600;
+  color: #333;
+}
+
+.star-name p {
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  color: #444;
+}
+
 /* =============================
    ✦ 3D Modal Styles Enhanced
    ============================= */
@@ -429,8 +572,8 @@ form button:hover {
 
 /* Fix extra space below slider */
 section:last-of-type {
-  margin-bottom: 0 !important;
-  padding-bottom: 0 !important;
+  margin-bottom: 0 ;
+  padding-bottom: 0 ;
 }
 
 .number-inc {
@@ -476,4 +619,15 @@ section:last-of-type {
   font-size: 2.5rem;
   color: #17a2b8;
   margin-bottom: 0.5rem;
+}
+
+
+.list-group-item {
+  transition: all 0.3s ease;
+}
+.list-group-item:hover {
+  background-color: #f0f8ff;
+}
+.card-body {
+  transition: all 0.3s ease-in-out;
 }
