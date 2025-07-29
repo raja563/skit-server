@@ -7,32 +7,23 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
-const API = import.meta.env.VITE_API_URL;
+const BASE_URL = import.meta.env.VITE_API_URL;
 
-
-/* --------------------------------------------------------- */
-/* Utility helpers                                           */
-/* --------------------------------------------------------- */
-const fmt        = (n) => (isNaN(n) ? "0.00" : Number(n).toFixed(2));
+// Utility helpers
+const fmt = (n) => (isNaN(n) ? "0.00" : Number(n).toFixed(2));
 const formatDate = (iso) => (iso ? iso.split("T")[0] : "N/A");
 
-/* --------------------------------------------------------- */
-/* Component                                                 */
-/* --------------------------------------------------------- */
 const FeesList = () => {
-  /* ----------- local state ------------------------------- */
-  const [rows,         setRows]     = useState([]);
-  const [search,       setSearch]   = useState("");
-  const [receiptSearch,setRS]       = useState("");
-  const [department,   setDept]     = useState("");
-  const [batch,        setBatch]    = useState("");
-  const [page,         setPage]     = useState(1);
-  const [expanded,     setExp]      = useState(new Set());
-  const [showAll,      setShowAll]  = useState(false);
+  const [rows, setRows] = useState([]);
+  const [search, setSearch] = useState("");
+  const [receiptSearch, setRS] = useState("");
+  const [department, setDept] = useState("");
+  const [batch, setBatch] = useState("");
+  const [page, setPage] = useState(1);
+  const [expanded, setExp] = useState(new Set());
+  const [showAll, setShowAll] = useState(false);
+  const LIMIT = 10;
 
-  const LIMIT = 10;                       // rows per page (when !showAll)
-
-  /* Toggle transaction visibility for a student ----------- */
   const toggleRow = (id) =>
     setExp((prev) => {
       const next = new Set(prev);
@@ -40,30 +31,25 @@ const FeesList = () => {
       return next;
     });
 
-  /* ------------------- initial load ---------------------- */
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        /* ► 1. Pull everything in parallel */
         const [
-          acadDec, examDec, hostDec, transDec,  // decided
-          acadDep, examDep, hostDep, transDep,  // deposited
-          students                             // master
+          acadDec, examDec, hostDec, transDec,
+          acadDep, examDep, hostDep, transDep,
+          students
         ] = await Promise.all([
-          axios.get(`${API}decideFees/`),
-          axios.get(`${API}dEfee/`),
-          axios.get(`${API}dHfee/`),
-          axios.get(`${API}dTfee/`),
-
-          axios.get(`${API}dpfees/`),
-          axios.get(`${API}dpefee/`),
-          axios.get(`${API}dphfee/`),
-          axios.get(`${API}dptfee/`),
-
-          axios.get(`${API}student/`),
+          axios.get(`${BASE_URL}/api/decideFees/`),
+          axios.get(`${BASE_URL}/api/dEfee/`),
+          axios.get(`${BASE_URL}/api/dHfee/`),
+          axios.get(`${BASE_URL}/api/dTfee/`),
+          axios.get(`${BASE_URL}/api/dpfees/`),
+          axios.get(`${BASE_URL}/api/dpefee/`),
+          axios.get(`${BASE_URL}/api/dphfee/`),
+          axios.get(`${BASE_URL}/api/dptfee/`),
+          axios.get(`${BASE_URL}/api/student/`)
         ]);
 
-        /* ► 2. Build <student‑id → decided amount> dictionaries */
         const buildDec = (data, key) =>
           data.reduce((m, row) => {
             m[row.student] = parseFloat(row[key] ?? 0);
@@ -71,87 +57,92 @@ const FeesList = () => {
           }, {});
 
         const decided = {
-          academic:  buildDec(acadDec.data,  "decidedamt"),
-          exam:      buildDec(examDec.data,  "decidedexamfee"),
-          hostel:    buildDec(hostDec.data,  "decidedhostelfee"),
-          transport: buildDec(transDec.data, "decidedtransportfee"),
+          academic: buildDec(acadDec.data, "decidedamt"),
+          exam: buildDec(examDec.data, "decidedexamfee"),
+          hostel: buildDec(hostDec.data, "decidedhostelfee"),
+          transport: buildDec(transDec.data, "decidedtransportfee")
         };
 
-        /* ► 3. Build deposits map with running totals + txns */
-        const deposits = new Map();               // id → {totals, transactions[]}
+        const deposits = new Map();
         const addDep = (arr, field, cat) => {
           arr.forEach((d) => {
-            if (!deposits.has(d.student))
+            if (!deposits.has(d.student)) {
               deposits.set(d.student, {
-                academic: 0, exam: 0, hostel: 0, transport: 0, transactions: [],
+                academic: 0,
+                exam: 0,
+                hostel: 0,
+                transport: 0,
+                transactions: []
               });
+            }
             const e = deposits.get(d.student);
             e[cat] += parseFloat(d[field] ?? 0);
             e.transactions.push({
-              receipt:  d.receipt,
-              amount:   parseFloat(d[field] ?? 0),
-              date:     d.created_at,
-              remark:   d.remark ?? "",
-              category: cat,
+              receipt: d.receipt,
+              amount: parseFloat(d[field] ?? 0),
+              date: d.created_at,
+              remark: d.remark ?? "",
+              category: cat
             });
           });
         };
-        addDep(acadDep.data,  "dpfees",          "academic");
-        addDep(examDep.data,  "dpexamfees",      "exam");
-        addDep(hostDep.data,  "dphostelfees",    "hostel");
+        addDep(acadDep.data, "dpfees", "academic");
+        addDep(examDep.data, "dpexamfees", "exam");
+        addDep(hostDep.data, "dphostelfees", "hostel");
         addDep(transDep.data, "dptransportfees", "transport");
 
-        /* ► 4. Student lookup map */
         const sInfo = new Map(
           students.data.map((s) => [
             s.student_id,
             {
-              name:       s.name,
-              course:     s.course,
-              batch:      `${s.session} (${s.course})`,
-              department: s.course,
-            },
+              name: s.name,
+              course: s.course,
+              batch: `${s.session} (${s.course})`,
+              department: s.course
+            }
           ])
         );
 
-        /* ► 5. Flatten everything out for UI */
         const out = [];
         Object.keys(decided.academic).forEach((id) => {
           const d = {
-            academic:   decided.academic[id]  ?? 0,
-            exam:       decided.exam[id]      ?? 0,
-            hostel:     decided.hostel[id]    ?? 0,
-            transport:  decided.transport[id] ?? 0,
+            academic: decided.academic[id] ?? 0,
+            exam: decided.exam[id] ?? 0,
+            hostel: decided.hostel[id] ?? 0,
+            transport: decided.transport[id] ?? 0
           };
           const p = deposits.get(id) ?? {
-            academic: 0, exam: 0, hostel: 0, transport: 0, transactions: [],
+            academic: 0,
+            exam: 0,
+            hostel: 0,
+            transport: 0,
+            transactions: []
           };
           const pend = {
             academic: d.academic - p.academic,
-            exam:     d.exam     - p.exam,
-            hostel:   d.hostel   - p.hostel,
-            transport:d.transport- p.transport,
+            exam: d.exam - p.exam,
+            hostel: d.hostel - p.hostel,
+            transport: d.transport - p.transport
           };
-          const totalPend   = Object.values(pend).reduce((a, b) => a + b, 0);
+          const totalPend = Object.values(pend).reduce((a, b) => a + b, 0);
           const statusLabel = totalPend <= 0 ? "Settled" : "Pending";
-
-          const stu      = sInfo.get(id) ?? {};
+          const stu = sInfo.get(id) ?? {};
           const latestTx = p.transactions.at(-1) ?? {};
 
           out.push({
             student_id: id,
-            name:       stu.name  ?? "",
-            batch:      stu.batch ?? "",
+            name: stu.name ?? "",
+            batch: stu.batch ?? "",
             department: stu.department ?? "",
-            decided:    d,
-            paid:       p,
-            pending:    pend,
-            receipt:    latestTx.receipt ?? "N/A",
-            payDate:    formatDate(latestTx.date),
-            status:     statusLabel,
+            decided: d,
+            paid: p,
+            pending: pend,
+            receipt: latestTx.receipt ?? "N/A",
+            payDate: formatDate(latestTx.date),
+            status: statusLabel,
             transactions: p.transactions.sort(
               (a, b) => new Date(a.date) - new Date(b.date)
-            ),
+            )
           });
         });
         setRows(out);
@@ -162,56 +153,50 @@ const FeesList = () => {
     fetchAll();
   }, []);
 
-  /* ------------------- filtering -------------------------- */
   const filtered = rows.filter((r) => {
-    const nm   = r.name.toLowerCase().includes(search.toLowerCase());
-    const dep  = department === "" || r.department === department;
-    const bat  = batch === "" || r.batch === batch;
+    const nm = r.name.toLowerCase().includes(search.toLowerCase());
+    const dep = department === "" || r.department === department;
+    const bat = batch === "" || r.batch === batch;
     const recL = receiptSearch.toLowerCase();
-    const rec  =
+    const rec =
       recL === "" ||
       r.receipt.toLowerCase().includes(recL) ||
-      r.transactions.some((t) => t.receipt.toLowerCase().includes(recL));
+      r.transactions.some((t) =>
+        t.receipt.toLowerCase().includes(recL)
+      );
     return nm && dep && bat && rec;
   });
 
-  /* Guard: if filters knock us past last page, pull back */
-  const pages = showAll
-    ? 1
-    : Math.max(1, Math.ceil(filtered.length / LIMIT));
+  const pages = showAll ? 1 : Math.max(1, Math.ceil(filtered.length / LIMIT));
   useEffect(() => {
     if (page > pages) setPage(pages);
   }, [pages, page]);
 
-  /* Slice for current page -------------------------------- */
   const slice = showAll
     ? filtered
     : filtered.slice((page - 1) * LIMIT, page * LIMIT);
-
-  /* Distinct dropdown lists ------------------------------- */
-  const depts   = [...new Set(rows.map((r) => r.department))];
+  const depts = [...new Set(rows.map((r) => r.department))];
   const batches = [...new Set(rows.map((r) => r.batch))];
 
-  /* ------------------- Export helpers -------------------- */
   const makeFlat = (r) => ({
-    "Student ID":         r.student_id,
-    "Student Name":       r.name,
-    "Session (Course)":   r.batch,
-    "Latest Receipt":     r.receipt,
-    "Latest Pay Date":    r.payDate,
-    "Dec Academic":       fmt(r.decided.academic),
-    "Dec Exam":           fmt(r.decided.exam),
-    "Dec Hostel":         fmt(r.decided.hostel),
-    "Dec Transport":      fmt(r.decided.transport),
-    "Paid Academic":      fmt(r.paid.academic),
-    "Paid Exam":          fmt(r.paid.exam),
-    "Paid Hostel":        fmt(r.paid.hostel),
-    "Paid Transport":     fmt(r.paid.transport),
-    "Pend Academic":      fmt(r.pending.academic),
-    "Pend Exam":          fmt(r.pending.exam),
-    "Pend Hostel":        fmt(r.pending.hostel),
-    "Pend Transport":     fmt(r.pending.transport),
-    Status:               r.status,
+    "Student ID": r.student_id,
+    "Student Name": r.name,
+    "Session (Course)": r.batch,
+    "Latest Receipt": r.receipt,
+    "Latest Pay Date": r.payDate,
+    "Dec Academic": fmt(r.decided.academic),
+    "Dec Exam": fmt(r.decided.exam),
+    "Dec Hostel": fmt(r.decided.hostel),
+    "Dec Transport": fmt(r.decided.transport),
+    "Paid Academic": fmt(r.paid.academic),
+    "Paid Exam": fmt(r.paid.exam),
+    "Paid Hostel": fmt(r.paid.hostel),
+    "Paid Transport": fmt(r.paid.transport),
+    "Pend Academic": fmt(r.pending.academic),
+    "Pend Exam": fmt(r.pending.exam),
+    "Pend Hostel": fmt(r.pending.hostel),
+    "Pend Transport": fmt(r.pending.transport),
+    Status: r.status
   });
 
   const exportExcel = () => {
@@ -231,12 +216,11 @@ const FeesList = () => {
       body,
       startY: 50,
       styles: { fontSize: 7 },
-      headStyles: { fillColor: [50, 50, 50] },
+      headStyles: { fillColor: [50, 50, 50] }
     });
     doc.save("FeesList.pdf");
   };
 
-  /* ------------------- markup ---------------------------- */
   return (
     <div className="container-fluid">
       <h4 className="text-center text-white p-1 bg-success">
