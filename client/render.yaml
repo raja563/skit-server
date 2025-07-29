@@ -1,0 +1,5 @@
+staticPublishPath: build
+routes:
+  - type: rewrite
+    source: /.*      # All routes
+    destination: /index.html
