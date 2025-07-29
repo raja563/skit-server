@@ -8,7 +8,7 @@ const StudentPortal = () => {
         <div className="col-12 d-flex justify-content-between align-items-center py-3 px-4 border-bottom">
           <h2 className="text-primary m-0">Student Portal</h2>
           <div className="text-secondary">
-            Welcome to <span className="text-danger">RajaBabu</span>
+            Welcome to <span className="text-danger"></span>
           </div>
         </div>
 
@@ -20,12 +20,7 @@ const StudentPortal = () => {
                           <li><Link>Profile</Link></li>
                           <li className='nested-list'> <Link to={'syllabus'}>Syllabus</Link>
                           </li>
-                          <li>Class Schedule</li>
-                          <li>Internal Exam Detail</li>
-                          <li>Internal Exam Result</li>
                           <li><Link to={'notes'}>Notes</Link></li>
-                          <li>External Exam Detail</li>
-                          <li>Result</li>
                           <li>Activity</li>
                           <li>Assignment</li>
                           <li>Assignment Submission</li>
