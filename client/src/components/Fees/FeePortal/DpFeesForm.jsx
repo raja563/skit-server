@@ -175,177 +175,175 @@ const DpFeesForm = () => {
   const fix2 = (n) => Number(n || 0).toFixed(2);
 
   return (
-    <div className="container">
-      <div className="row justify-content-center">
-        <div className="col-md-11">
-          <h2 className="text-center bg-success text-white p-1 rounded">
-            Deposit Fees
-          </h2>
+   <div className="container py-3">
+  <div className="row justify-content-center">
+    <div className="col-md-11">
+      <h2 className="text-center bg-success text-white py-2 rounded shadow-sm mb-3">
+        Deposit Fees
+      </h2>
 
-          <form
-            onSubmit={handleSubmit}
-            className="bg-secondary text-white p-4 rounded"
-          >
-            <div className="row mb-1">
-              <div className="col-md-6">
-                <label>Student</label>
-                <Select
-                  options={studentOptions}
-                  onChange={handleStudentChange}
-                  value={selectedStu}
-                  placeholder="Search & Select student"
-                  className="text-dark"
-                />
-              </div>
+      <form onSubmit={handleSubmit} className="bg-light text-dark p-3 rounded shadow-sm">
+        <div className="row g-2 mb-2">
+          <div className="col-md-6">
+            <label className="form-label">Student</label>
+            <Select
+              options={studentOptions}
+              onChange={handleStudentChange}
+              value={selectedStu}
+              placeholder="Search & Select student"
+              className="text-dark"
+            />
+          </div>
 
-              <div className="col-md-6">
-                <label>Receipt No</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={selectedStu ? "Will be generated on submit" : ""}
-                  readOnly
-                />
-              </div>
-            </div>
+          <div className="col-md-6">
+            <label className="form-label">Receipt No</label>
+            <input
+              type="text"
+              className="form-control"
+              value={selectedStu ? "Will be generated on submit" : ""}
+              readOnly
+            />
+          </div>
+        </div>
 
-            <div className="row">
-              <div className="col-md-4 mb-1">
-                <label>Name</label>
-                <input type="text" className="form-control" value={form.name} readOnly />
-              </div>
-              <div className="col-md-4 mb-1">
-                <label>Course</label>
-                <input type="text" className="form-control" value={form.course} readOnly />
-              </div>
-              <div className="col-md-4 mb-1">
-                <label>Session</label>
-                <input type="text" className="form-control" value={form.session} readOnly />
-              </div>
-              <div className="col-md-4 mb-1">
-                <label>Year</label>
-                <select
-                  name="year"
-                  className="form-control"
-                  value={form.year}
-                  onChange={handleChange}
-                  disabled={isLocked}
-                  required
-                >
-                  <option value="">-- Select Year --</option>
-                  <option value="First">First</option>
-                  <option value="Second">Second</option>
-                  <option value="Third">Third</option>
-                </select>
-              </div>
-              <div className="col-md-4 mb-1">
-                <label>Semester</label>
-                <select
-                  name="semester"
-                  className="form-control"
-                  value={form.semester}
-                  onChange={handleChange}
-                  disabled={isLocked || !form.year}
-                  required
-                >
-                  <option value="">-- Select Semester --</option>
-                  {(YEAR_SEMESTER[form.year] || []).map((sem) => (
-                    <option key={sem} value={sem}>
-                      {sem}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+        <div className="row g-2 mb-2">
+          <div className="col-md-4">
+            <label className="form-label">Name</label>
+            <input type="text" className="form-control" value={form.name} readOnly />
+          </div>
+          <div className="col-md-4">
+            <label className="form-label">Course</label>
+            <input type="text" className="form-control" value={form.course} readOnly />
+          </div>
+          <div className="col-md-4">
+            <label className="form-label">Session</label>
+            <input type="text" className="form-control" value={form.session} readOnly />
+          </div>
+          <div className="col-md-4">
+            <label className="form-label">Year</label>
+            <select
+              name="year"
+              className="form-control"
+              value={form.year}
+              onChange={handleChange}
+              disabled={isLocked}
+              required
+            >
+              <option value="">-- Select Year --</option>
+              <option value="First">First</option>
+              <option value="Second">Second</option>
+              <option value="Third">Third</option>
+            </select>
+          </div>
+          <div className="col-md-4">
+            <label className="form-label">Semester</label>
+            <select
+              name="semester"
+              className="form-control"
+              value={form.semester}
+              onChange={handleChange}
+              disabled={isLocked || !form.year}
+              required
+            >
+              <option value="">-- Select Semester --</option>
+              {(YEAR_SEMESTER[form.year] || []).map((sem) => (
+                <option key={sem} value={sem}>
+                  {sem}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
 
-            <div className="table-responsive">
-              <table className="table table-bordered bg-white text-dark">
-                <thead className="table-dark text-center">
-                  <tr>
-                    <th>Total Decided Fee</th>
-                    <th>Pay Now</th>
-                    <th>Remark</th>
-                    <th>Pending</th>
-                  </tr>
-                </thead>
-                <tbody className="text-center">
-                  <tr>
-                    <td>{fix2(form.decide_fees)}</td>
-                    <td>
-                      <input
-                        type="number"
-                        name="dpfees"
-                        max={originalPending}
-                        value={form.dpfees}
-                        onChange={handleChange}
-                        className="form-control"
-                        disabled={isLocked}
-                        required
-                        placeholder="Enter amount"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        name="remark"
-                        value={form.remark}
-                        onChange={handleChange}
-                        className="form-control"
-                        disabled={isLocked}
-                      />
-                    </td>
-                    <td>{fix2(form.pending)}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div className="row">
-              <div className="col-md-6 mb-1">
-                <label>Payment Mode</label>
-                <select
-                  name="payment_mode"
-                  value={form.payment_mode}
-                  onChange={handleChange}
-                  className="form-control"
-                  disabled={isLocked}
-                  required
-                >
-                  <option value="">-- Select Mode --</option>
-                  <option value="cash">Cash</option>
-                  <option value="online">Online</option>
-                  <option value="cheque">Cheque</option>
-                </select>
-              </div>
-              {["online", "cheque"].includes(form.payment_mode) && (
-                <div className="col-md-6 mb-1">
-                  <label>Transaction ID</label>
+        <div className="table-responsive mb-3">
+          <table className="table table-bordered bg-white text-dark">
+            <thead className="table-dark text-center">
+              <tr>
+                <th>Total Decided Fee</th>
+                <th>Pay Now</th>
+                <th>Remark</th>
+                <th>Pending</th>
+              </tr>
+            </thead>
+            <tbody className="text-center">
+              <tr>
+                <td>{fix2(form.decide_fees)}</td>
+                <td>
                   <input
-                    type="text"
-                    name="transaction_id"
-                    value={form.transaction_id}
+                    type="number"
+                    name="dpfees"
+                    max={originalPending}
+                    value={form.dpfees}
                     onChange={handleChange}
                     className="form-control"
                     disabled={isLocked}
                     required
+                    placeholder="Enter amount"
                   />
-                </div>
-              )}
-            </div>
-
-            <div className="text-center">
-              <button
-                type="submit"
-                className="btn btn-primary w-50"
-                disabled={isLocked}
-              >
-                Submit
-              </button>
-            </div>
-          </form>
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    name="remark"
+                    value={form.remark}
+                    onChange={handleChange}
+                    className="form-control"
+                    disabled={isLocked}
+                  />
+                </td>
+                <td>{fix2(form.pending)}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </div>
+
+        <div className="row g-2 mb-3">
+          <div className="col-md-6">
+            <label className="form-label">Payment Mode</label>
+            <select
+              name="payment_mode"
+              value={form.payment_mode}
+              onChange={handleChange}
+              className="form-control"
+              disabled={isLocked}
+              required
+            >
+              <option value="">-- Select Mode --</option>
+              <option value="cash">Cash</option>
+              <option value="online">Online</option>
+              <option value="cheque">Cheque</option>
+            </select>
+          </div>
+          {["online", "cheque"].includes(form.payment_mode) && (
+            <div className="col-md-6">
+              <label className="form-label">Transaction ID</label>
+              <input
+                type="text"
+                name="transaction_id"
+                value={form.transaction_id}
+                onChange={handleChange}
+                className="form-control"
+                disabled={isLocked}
+                required
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="text-center">
+          <button
+            type="submit"
+            className="btn btn-primary px-4 py-2 w-50"
+            disabled={isLocked}
+          >
+            Submit
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
+</div>
+
   );
 };
 
