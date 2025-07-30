@@ -16,6 +16,7 @@ const YEAR_SEMESTER = {
 const DpFeesForm = () => {
   const [studentOptions, setStudentOptions] = useState([]);
   const [selectedStu, setSelectedStu] = useState(null);
+  const [originalPending, setOriginalPending] = useState(0);
 
   const blankForm = {
   student: "",
@@ -94,29 +95,33 @@ const DpFeesForm = () => {
         const paidSoFar = deposits.reduce((sum, item) => sum + parseFloat(item.dpfees), 0);
         const pending = Math.max(0, decidedFee - paidSoFar);
 
-        setForm({
-          ...blankForm,
-          student: option.value,
-          name: option.name,
-          session: option.session,
-          course: option.course,
-          year: yearStr,
-          semester: YEAR_SEMESTER[yearStr]?.[0] || "",
-          decide_fees: decidedFee,
-          pending: pending,
-        });
+       setOriginalPending(pending); // store actual pending from API
+setForm({
+  ...blankForm,
+  student: option.value,
+  name: option.name,
+  session: option.session,
+  course: option.course,
+  year: yearStr,
+  semester: YEAR_SEMESTER[yearStr]?.[0] || "",
+  decide_fees: decidedFee,
+  pending: pending,
+});
+
       } else {
-        setForm({
-          ...blankForm,
-          student: option.value,
-          name: option.name,
-          session: option.session,
-          course: option.course,
-          year: yearStr,
-          semester: YEAR_SEMESTER[yearStr]?.[0] || "",
-          decide_fees: decidedFee,
-          pending: decidedFee,
-        });
+       setOriginalPending(pending); // store actual pending from API
+setForm({
+  ...blankForm,
+  student: option.value,
+  name: option.name,
+  session: option.session,
+  course: option.course,
+  year: yearStr,
+  semester: YEAR_SEMESTER[yearStr]?.[0] || "",
+  decide_fees: decidedFee,
+  pending: pending,
+});
+
       }
     } catch (err) {
       toast.error("Failed to fetch previous payments");
@@ -129,16 +134,17 @@ const DpFeesForm = () => {
   const updated = { ...form, [name]: value };
 
   if (name === "dpfees") {
-    const paid = parseFloat(value || 0);
+  const paid = parseFloat(value || 0);
 
-    if (paid > form.pending) {
-      toast.error("Amount exceeds pending fees!");
-      return;
-    }
-
-    updated.dpfees = value;
-    updated.pending = (form.decide_fees - paid).toFixed(2);
+  if (paid > originalPending) {
+    toast.error("Amount exceeds pending fees!");
+    return;
   }
+
+  updated.dpfees = value;
+  updated.pending = (originalPending - paid).toFixed(2);  // Use originalPending from API
+}
+
 
   if (name === "year") {
     updated.semester = YEAR_SEMESTER[value]?.[0] || "";
