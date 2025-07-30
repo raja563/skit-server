@@ -601,6 +601,7 @@ from .serializers import DpTransportFeesSerializer
 from django.shortcuts import get_object_or_404
 
 @api_view(['GET', 'POST'])
+@permission_classes([AllowAny])
 def dp_transport(request):
     if request.method == 'GET':
         fees = DpTransportFees.objects.all().order_by('-created_at')

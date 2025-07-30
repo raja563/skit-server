@@ -14,7 +14,6 @@ const YEAR_SEMESTER = {
 const DpTransportFee = () => {
   const [studentOptions, setStudentOptions] = useState([]);
   const [selectedStu, setSelectedStu] = useState(null);
-  const [originalPending, setOriginalPending] = useState(0);
 
   const blankForm = {
     student: "",
@@ -24,7 +23,7 @@ const DpTransportFee = () => {
     year: "",
     semester: "",
     decide_fees: 0,
-    dpTransportfees: "",
+    dpTransportfees: 0,
     remark: "",
     pending: 0,
     payment_mode: "",
@@ -56,7 +55,7 @@ const DpTransportFee = () => {
             course: stu.course,
             year: stu.year,
             semester: stu.semester,
-            decidedamt: decided,
+            fees: { transport: decided },
           };
         });
 
@@ -66,7 +65,6 @@ const DpTransportFee = () => {
         console.error(err);
       }
     };
-
     fetchAll();
   }, []);
 
@@ -89,15 +87,14 @@ const DpTransportFee = () => {
     try {
       const res = await axios.get(`${API}/api/dptfee/`);
       const deposits = res.data.filter((d) => d.student === option.value);
-
-      const total = option.decidedamt;
       const paid = deposits.reduce(
         (sum, item) => sum + parseFloat(item.dpTransportfees || 0),
         0
       );
+
+      const total = option.fees.transport;
       const pending = Math.max(0, total - paid);
 
-      setOriginalPending(pending);
       setForm({
         ...blankForm,
         student: option.value,
@@ -107,6 +104,7 @@ const DpTransportFee = () => {
         year: yearStr,
         semester: YEAR_SEMESTER[yearStr]?.[0] || "",
         decide_fees: total,
+        dpTransportfees: 0,
         pending: pending,
       });
     } catch (err) {
@@ -120,13 +118,9 @@ const DpTransportFee = () => {
     const updated = { ...form, [name]: value };
 
     if (name === "dpTransportfees") {
-      const paid = parseFloat(value || 0);
-      if (paid > originalPending) {
-        toast.error("Amount exceeds pending fees!");
-        return;
-      }
-      updated.dpTransportfees = value;
-      updated.pending = (originalPending - paid).toFixed(2);
+      const paid = Math.min(parseFloat(value || 0), parseFloat(form.decide_fees));
+      updated.dpTransportfees = paid;
+      updated.pending = parseFloat(form.decide_fees) - paid;
     }
 
     if (name === "year") {
@@ -147,21 +141,22 @@ const DpTransportFee = () => {
       return;
     }
 
-    const paid = parseFloat(form.dpTransportfees || 0);
-    const remaining = parseFloat(form.pending || 0);
-
-    if (remaining === 0 || paid === 0) {
-      toast.success("Settled / Full Fees Paid. No further payment needed.");
-      return;
-    }
-
     const payload = {
-      ...form,
+      student: form.student,
+      name: form.name,
+      session: form.session,
+      course: form.course,
+      year: form.year,
+      semester: form.semester,
       decide_fees: parseFloat(form.decide_fees),
-      dpTransportfees: paid,
-      pending: remaining,
+      dpTransportfees: parseFloat(form.dpTransportfees),
+      pending: parseFloat(form.pending),
+      remark: form.remark,
+      payment_mode: form.payment_mode,
       transaction_id: form.payment_mode === "cash" ? null : form.transaction_id,
     };
+
+    console.log("Submitting Payload =>", payload);
 
     try {
       const res = await axios.post(`${API}/api/dptfee/`, payload);
@@ -169,8 +164,8 @@ const DpTransportFee = () => {
       setSelectedStu(null);
       setForm(blankForm);
     } catch (err) {
+      console.error("Submission Error:", err.response?.data || err);
       toast.error("Submission failed");
-      console.error(err.response?.data || err);
     }
   };
 
@@ -179,172 +174,159 @@ const DpTransportFee = () => {
 
   return (
     <div className="fluid mt-4">
-      <div className="row justify-content-center">
-        <div className="col-md-11">
-          <h2 className="text-center bg-success text-white p-1 rounded shadow-sm">
-            Deposit Transport Fee
-          </h2>
+      <h2 className="text-center bg-success text-white p-2 rounded">Deposit Transport Fees</h2>
+      <form onSubmit={handleSubmit} className="bg-secondary text-white p-4 rounded">
+        <div className="row mb-1">
+          <div className="col-md-6">
+            <label>Student</label>
+            <Select
+              options={studentOptions}
+              onChange={handleStudentChange}
+              value={selectedStu}
+              placeholder="Search & Select student"
+              className="text-dark"
+            />
+          </div>
+          <div className="col-md-6">
+            <label>Receipt No</label>
+            <input
+              type="text"
+              className="form-control"
+              value={selectedStu ? "Will be generated on submit" : ""}
+              readOnly
+            />
+          </div>
+        </div>
 
-          <form onSubmit={handleSubmit} className="bg-secondary text-light p-2 rounded shadow-sm">
-            <div className="row g-2">
-              <div className="col-md-6">
-                <label className="form-label">Student</label>
-                <Select
-                  options={studentOptions}
-                  onChange={handleStudentChange}
-                  value={selectedStu}
-                  placeholder="Search & Select student"
-                  className="text-dark"
-                />
-              </div>
+        <div className="row">
+          <div className="col-md-4">
+            <label>Name</label>
+            <input type="text" className="form-control" value={form.name} readOnly />
+          </div>
+          <div className="col-md-4">
+            <label>Course</label>
+            <input type="text" className="form-control" value={form.course} readOnly />
+          </div>
+          <div className="col-md-4">
+            <label>Session</label>
+            <input type="text" className="form-control" value={form.session} readOnly />
+          </div>
 
-              <div className="col-md-6">
-                <label className="form-label">Receipt No</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={selectedStu ? "Will be generated on submit" : ""}
-                  readOnly
-                />
-              </div>
-            </div>
+          <div className="col-md-4">
+            <label>Year</label>
+            <select
+              name="year"
+              className="form-control"
+              value={form.year}
+              onChange={handleChange}
+              disabled={isLocked}
+              required
+            >
+              <option value="">-- Select Year --</option>
+              <option value="First">First</option>
+              <option value="Second">Second</option>
+              <option value="Third">Third</option>
+            </select>
+          </div>
+          <div className="col-md-4">
+            <label>Semester</label>
+            <select
+              name="semester"
+              className="form-control"
+              value={form.semester}
+              onChange={handleChange}
+              disabled={isLocked || !form.year}
+              required
+            >
+              <option value="">-- Select Semester --</option>
+              {(YEAR_SEMESTER[form.year] || []).map((sem) => (
+                <option key={sem} value={sem}>{sem}</option>
+              ))}
+            </select>
+          </div>
+        </div>
 
-            <div className="row g-2">
-              <div className="col-md-4">
-                <label className="form-label">Name</label>
-                <input type="text" className="form-control" value={form.name} readOnly />
-              </div>
-              <div className="col-md-4">
-                <label className="form-label">Course</label>
-                <input type="text" className="form-control" value={form.course} readOnly />
-              </div>
-              <div className="col-md-4">
-                <label className="form-label">Session</label>
-                <input type="text" className="form-control" value={form.session} readOnly />
-              </div>
-              <div className="col-md-4">
-                <label className="form-label">Year</label>
-                <select
-                  name="year"
-                  className="form-control"
-                  value={form.year}
-                  onChange={handleChange}
-                  disabled={isLocked}
-                  required
-                >
-                  <option value="">-- Select Year --</option>
-                  <option value="First">First</option>
-                  <option value="Second">Second</option>
-                  <option value="Third">Third</option>
-                </select>
-              </div>
-              <div className="col-md-4">
-                <label className="form-label">Semester</label>
-                <select
-                  name="semester"
-                  className="form-control"
-                  value={form.semester}
-                  onChange={handleChange}
-                  disabled={isLocked || !form.year}
-                  required
-                >
-                  <option value="">-- Select Semester --</option>
-                  {(YEAR_SEMESTER[form.year] || []).map((sem) => (
-                    <option key={sem} value={sem}>
-                      {sem}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="table-responsive">
-              <table className="table table-bordered bg-white text-dark">
-                <thead className="table-dark text-center">
-                  <tr>
-                    <th>Total Decided Fee</th>
-                    <th>Pay Now</th>
-                    <th>Remark</th>
-                    <th>Pending</th>
-                  </tr>
-                </thead>
-                <tbody className="text-center">
-                  <tr>
-                    <td>{fix2(form.decide_fees)}</td>
-                    <td>
-                      <input
-                        type="number"
-                        name="dpTransportfees"
-                        max={originalPending}
-                        value={form.dpTransportfees}
-                        onChange={handleChange}
-                        className="form-control"
-                        disabled={isLocked}
-                        required
-                        placeholder="Enter amount"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        name="remark"
-                        value={form.remark}
-                        onChange={handleChange}
-                        className="form-control"
-                        disabled={isLocked}
-                      />
-                    </td>
-                    <td>{fix2(form.pending)}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div className="row g-2">
-              <div className="col-md-6">
-                <label className="form-label">Payment Mode</label>
-                <select
-                  name="payment_mode"
-                  value={form.payment_mode}
-                  onChange={handleChange}
-                  className="form-control"
-                  disabled={isLocked}
-                  required
-                >
-                  <option value="">-- Select Mode --</option>
-                  <option value="cash">Cash</option>
-                  <option value="online">Online</option>
-                  <option value="cheque">Cheque</option>
-                </select>
-              </div>
-              {["online", "cheque"].includes(form.payment_mode) && (
-                <div className="col-md-6">
-                  <label className="form-label">Transaction ID</label>
+        <div className="table-responsive my-3">
+          <table className="table table-bordered bg-white text-dark text-center">
+            <thead className="table-dark">
+              <tr>
+                <th>Total Decided Fee</th>
+                <th>Pay Now</th>
+                <th>Remark</th>
+                <th>Pending</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{fix2(form.decide_fees)}</td>
+                <td>
                   <input
-                    type="text"
-                    name="transaction_id"
-                    value={form.transaction_id}
+                    type="number"
+                    name="dpTransportfees"
+                    min="0"
+                    max={form.decide_fees}
+                    value={form.dpTransportfees}
                     onChange={handleChange}
                     className="form-control"
                     disabled={isLocked}
                     required
                   />
-                </div>
-              )}
-            </div>
-
-            <div className="text-center mt-2">
-              <button
-                type="submit"
-                className="btn btn-primary w-25"
-                disabled={isLocked}
-              >
-                Submit
-              </button>
-            </div>
-          </form>
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    name="remark"
+                    value={form.remark}
+                    onChange={handleChange}
+                    className="form-control"
+                    disabled={isLocked}
+                  />
+                </td>
+                <td>{fix2(form.pending)}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </div>
+
+        <div className="row">
+          <div className="col-md-6">
+            <label>Payment Mode</label>
+            <select
+              name="payment_mode"
+              value={form.payment_mode}
+              onChange={handleChange}
+              className="form-control"
+              disabled={isLocked}
+              required
+            >
+              <option value="">-- Select Mode --</option>
+              <option value="cash">Cash</option>
+              <option value="online">Online</option>
+              <option value="cheque">Cheque</option>
+            </select>
+          </div>
+          {["online", "cheque"].includes(form.payment_mode) && (
+            <div className="col-md-6">
+              <label>Transaction ID</label>
+              <input
+                type="text"
+                name="transaction_id"
+                value={form.transaction_id}
+                onChange={handleChange}
+                className="form-control"
+                disabled={isLocked}
+                required
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="text-center mt-1">
+          <button type="submit" className="btn btn-primary w-50" disabled={isLocked}>
+            Submit
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
