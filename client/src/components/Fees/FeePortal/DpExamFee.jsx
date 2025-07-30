@@ -35,7 +35,7 @@ const blankForm = {
   semester: "",
   decide_fees: "",
   dpexamfees: "",
-  pending: "",
+  pending:0,
   remark: "",
   payment_mode: "",
   transaction_id: "",
@@ -46,7 +46,8 @@ const DpExamFee = () => {
   const [selectedStu, setSelectedStu] = useState(null);
   const [receiptNo, setReceiptNo] = useState("");
   const [form, setForm] = useState(blankForm);
-
+  const [originalPending, setOriginalPending] = useState(0);
+  
   useEffect(() => {
     (async () => {
       try {
@@ -110,8 +111,9 @@ const DpExamFee = () => {
           : option.year === 2 || option.year === "2"
           ? "Second"
           : "Third";
-
+      setOriginalPending(pending);
       setForm({
+        ...blankForm,
         student: option.value,
         name: option.name,
         session: option.session,
@@ -135,9 +137,13 @@ const DpExamFee = () => {
     const updated = { ...form, [name]: value };
 
     if (name === "dpexamfees") {
-      const paid = Math.min(parseFloat(value || 0), parseFloat(form.pending || 0));
+      const paid = parseFloat(value || 0)
+       if (paid > originalPending) {
+        toast.error("Amount exceeds pending fees!");
+        return;
+      }
       updated.dpexamfees = value;
-      updated.pending = parseFloat(form.pending || 0) - paid;
+      updated.pending = (originalPending - paid).toFixed(2);
     }
 
     if (name === "year") {
@@ -155,6 +161,13 @@ const DpExamFee = () => {
     e.preventDefault();
     if (!selectedStu) return toast.error("Select a student first");
 
+    const paid = parseFloat(form.dpexamfees || 0);
+    const remaining = parseFloat(form.pending || 0);
+
+    if (remaining === 0 || paid === 0) {
+      toast.success("Settled / Full Fees Paid. No further payment needed.");
+      return;
+    }
     const payload = {
       ...form,
       decide_fees: parseFloat(form.decide_fees || 0),
@@ -187,8 +200,8 @@ const DpExamFee = () => {
             Deposit Exam Fees
           </h2>
 
-          <form onSubmit={handleSubmit} className="bg-secondary text-white p-4 rounded">
-            <div className="row mb-3">
+          <form onSubmit={handleSubmit} className="bg-secondary text-white p-2 rounded">
+            <div className="row ">
               <div className="col-md-6">
                 <label>Student</label>
                 <Select
@@ -207,12 +220,12 @@ const DpExamFee = () => {
 
             <div className="row">
               {["name", "course", "session"].map((fld, i) => (
-                <div key={i} className="col-md-4 mb-2">
+                <div key={i} className="col-md-4 ">
                   <label>{fld[0].toUpperCase() + fld.slice(1)}</label>
                   <input className="form-control" value={form[fld]} readOnly />
                 </div>
               ))}
-              <div className="col-md-4 mb-2">
+              <div className="col-md-4">
                 <label>Year</label>
                 <select
                   name="year"
@@ -227,7 +240,7 @@ const DpExamFee = () => {
                   <option>Third</option>
                 </select>
               </div>
-              <div className="col-md-4 mb-2">
+              <div className="col-md-4 ">
                 <label>Semester</label>
                 <select
                   name="semester"
@@ -244,7 +257,7 @@ const DpExamFee = () => {
               </div>
             </div>
 
-            <div className="table-responsive mt-3">
+            <div className="table-responsive">
               <table className="table table-bordered bg-white text-dark text-center">
                 <thead className="table-dark">
                   <tr>
@@ -284,7 +297,7 @@ const DpExamFee = () => {
             </div>
 
             <div className="row">
-              <div className="col-md-6 mb-2">
+              <div className="col-md-6">
                 <label>Payment Mode</label>
                 <select
                   name="payment_mode"
@@ -315,8 +328,8 @@ const DpExamFee = () => {
               )}
             </div>
 
-            <div className="text-center mt-3">
-              <button className="btn btn-primary px-4" disabled={isLocked}>
+            <div className="text-center">
+              <button className="btn btn-primary w-25" disabled={isLocked}>
                 Submit
               </button>
             </div>

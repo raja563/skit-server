@@ -23,7 +23,7 @@ const DpHostelFee = () => {
     year: "",
     semester: "",
     decide_fees: 0,
-    dphostelfees: 0,
+    dphostelfees:"",
     remark: "",
     pending: 0,
     payment_mode: "",
@@ -96,17 +96,17 @@ const DpHostelFee = () => {
       const pending = Math.max(0, total - paid);
 
       setForm({
-        ...blankForm,
-        student: option.value,
-        name: option.name,
-        session: option.session,
-        course: option.course,
-        year: yearStr,
-        semester: YEAR_SEMESTER[yearStr]?.[0] || "",
-        decide_fees: total,
-        dphostelfees: 0,
-        pending: pending,
-      });
+  ...blankForm,
+  student: option.value,
+  name: option.name,
+  session: option.session,
+  course: option.course,
+  year: yearStr,
+  semester: YEAR_SEMESTER[yearStr]?.[0] || "",
+  decide_fees: total,
+  dphostelfees: "",       // ✅ Set as empty
+  pending: pending,
+});
     } catch (err) {
       toast.error("Failed to fetch previous payments");
       console.error(err);
@@ -171,10 +171,10 @@ const DpHostelFee = () => {
   const fix2 = (n) => Number(n || 0).toFixed(2);
 
   return (
-    <div className="container mt-4">
+    <div className="fluid mt-4">
       <h2 className="text-center bg-success text-white p-2 rounded">Deposit Hostel Fees</h2>
-      <form onSubmit={handleSubmit} className="bg-secondary text-white p-4 rounded">
-        <div className="row mb-3">
+      <form onSubmit={handleSubmit} className="bg-secondary text-white p-2 rounded">
+        <div className="row  ">
           <div className="col-md-6">
             <label>Student</label>
             <Select
@@ -244,7 +244,7 @@ const DpHostelFee = () => {
           </div>
         </div>
 
-        <div className="table-responsive my-3">
+        <div className="table-responsive">
           <table className="table table-bordered bg-white text-dark text-center">
             <thead className="table-dark">
               <tr>
@@ -261,12 +261,12 @@ const DpHostelFee = () => {
                   <input
                     type="number"
                     name="dphostelfees"
-                    min="0"
                     max={form.decide_fees}
                     value={form.dphostelfees}
                     onChange={handleChange}
                     className="form-control"
                     disabled={isLocked}
+                    placeholder="Enter Amount"
                     required
                   />
                 </td>
@@ -319,8 +319,8 @@ const DpHostelFee = () => {
           )}
         </div>
 
-        <div className="text-center mt-3">
-          <button type="submit" className="btn btn-primary w-50" disabled={isLocked}>
+        <div className="text-center">
+          <button type="submit" className="btn btn-primary w-25" disabled={isLocked}>
             Submit
           </button>
         </div>

@@ -175,15 +175,15 @@ const DpFeesForm = () => {
   const fix2 = (n) => Number(n || 0).toFixed(2);
 
   return (
-   <div className="container py-3">
+   <div className="fluid mt-4">
   <div className="row justify-content-center">
     <div className="col-md-11">
-      <h2 className="text-center bg-success text-white py-2 rounded shadow-sm mb-3">
+      <h2 className="text-center bg-success text-white p-1 rounded shadow-sm ">
         Deposit Fees
       </h2>
 
-      <form onSubmit={handleSubmit} className="bg-light text-dark p-3 rounded shadow-sm">
-        <div className="row g-2 mb-2">
+      <form onSubmit={handleSubmit} className="bg-secondary text-light p-2 rounded shadow-sm">
+        <div className="row g-2">
           <div className="col-md-6">
             <label className="form-label">Student</label>
             <Select
@@ -206,7 +206,7 @@ const DpFeesForm = () => {
           </div>
         </div>
 
-        <div className="row g-2 mb-2">
+        <div className="row g-2  ">
           <div className="col-md-4">
             <label className="form-label">Name</label>
             <input type="text" className="form-control" value={form.name} readOnly />
@@ -255,7 +255,7 @@ const DpFeesForm = () => {
           </div>
         </div>
 
-        <div className="table-responsive mb-3">
+        <div className="table-responsive">
           <table className="table table-bordered bg-white text-dark">
             <thead className="table-dark text-center">
               <tr>
@@ -297,7 +297,7 @@ const DpFeesForm = () => {
           </table>
         </div>
 
-        <div className="row g-2 mb-3">
+        <div className="row g-2">
           <div className="col-md-6">
             <label className="form-label">Payment Mode</label>
             <select
@@ -333,7 +333,7 @@ const DpFeesForm = () => {
         <div className="text-center">
           <button
             type="submit"
-            className="btn btn-primary px-4 py-2 w-50"
+            className="btn btn-primary  w-25"
             disabled={isLocked}
           >
             Submit
