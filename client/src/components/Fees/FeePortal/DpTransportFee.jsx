@@ -23,7 +23,7 @@ const DpTransportFee = () => {
     year: "",
     semester: "",
     decide_fees: 0,
-    dpTransportfees: 0,
+    dpTransportfees: "", // <- Match model field
     remark: "",
     pending: 0,
     payment_mode: "",
@@ -104,8 +104,8 @@ const DpTransportFee = () => {
         year: yearStr,
         semester: YEAR_SEMESTER[yearStr]?.[0] || "",
         decide_fees: total,
-        dpTransportfees: 0,
-        pending: pending,
+        dpTransportfees: "",
+        pending,
       });
     } catch (err) {
       toast.error("Failed to fetch previous payments");
@@ -148,15 +148,13 @@ const DpTransportFee = () => {
       course: form.course,
       year: form.year,
       semester: form.semester,
+      payment_mode: form.payment_mode,
+      transaction_id: form.payment_mode === "cash" ? null : form.transaction_id,
       decide_fees: parseFloat(form.decide_fees),
       dpTransportfees: parseFloat(form.dpTransportfees),
       pending: parseFloat(form.pending),
       remark: form.remark,
-      payment_mode: form.payment_mode,
-      transaction_id: form.payment_mode === "cash" ? null : form.transaction_id,
     };
-
-    console.log("Submitting Payload =>", payload);
 
     try {
       const res = await axios.post(`${API}/api/dptfee/`, payload);
@@ -164,8 +162,8 @@ const DpTransportFee = () => {
       setSelectedStu(null);
       setForm(blankForm);
     } catch (err) {
-      console.error("Submission Error:", err.response?.data || err);
       toast.error("Submission failed");
+      console.error(err.response?.data || err);
     }
   };
 
@@ -175,8 +173,8 @@ const DpTransportFee = () => {
   return (
     <div className="fluid mt-4">
       <h2 className="text-center bg-success text-white p-2 rounded">Deposit Transport Fees</h2>
-      <form onSubmit={handleSubmit} className="bg-secondary text-white p-4 rounded">
-        <div className="row mb-1">
+      <form onSubmit={handleSubmit} className="bg-secondary text-white p-2 rounded">
+        <div className="row">
           <div className="col-md-6">
             <label>Student</label>
             <Select
@@ -240,13 +238,15 @@ const DpTransportFee = () => {
             >
               <option value="">-- Select Semester --</option>
               {(YEAR_SEMESTER[form.year] || []).map((sem) => (
-                <option key={sem} value={sem}>{sem}</option>
+                <option key={sem} value={sem}>
+                  {sem}
+                </option>
               ))}
             </select>
           </div>
         </div>
 
-        <div className="table-responsive my-3">
+        <div className="table-responsive">
           <table className="table table-bordered bg-white text-dark text-center">
             <thead className="table-dark">
               <tr>
@@ -263,12 +263,12 @@ const DpTransportFee = () => {
                   <input
                     type="number"
                     name="dpTransportfees"
-                    min="0"
                     max={form.decide_fees}
                     value={form.dpTransportfees}
                     onChange={handleChange}
                     className="form-control"
                     disabled={isLocked}
+                    placeholder="Enter Amount"
                     required
                   />
                 </td>
@@ -321,8 +321,8 @@ const DpTransportFee = () => {
           )}
         </div>
 
-        <div className="text-center mt-1">
-          <button type="submit" className="btn btn-primary w-50" disabled={isLocked}>
+        <div className="text-center">
+          <button type="submit" className="btn btn-primary w-25" disabled={isLocked}>
             Submit
           </button>
         </div>
