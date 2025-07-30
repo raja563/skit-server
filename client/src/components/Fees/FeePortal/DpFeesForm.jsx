@@ -8,9 +8,9 @@ const API = import.meta.env.VITE_API_URL;
 
 /* Year ➔ semester map */
 const YEAR_SEMESTER = {
-  First:  ["I", "II"],
+  First: ["I", "II"],
   Second: ["III", "IV"],
-  Third:  ["V", "VI"],
+  Third: ["V", "VI"],
 };
 
 const DpFeesForm = () => {
@@ -34,62 +34,37 @@ const DpFeesForm = () => {
   const [form, setForm] = useState(blankForm);
 
   useEffect(() => {
-    const fetchAll = async () => {
+    const fetchStudents = async () => {
       try {
-        const [
-          tuitionRes,
-          examRes,
-          hostelRes,
-          transportRes,
-          studentRes,
-        ] = await Promise.all([
-          axios.get(`${API}/api/decideFees/`),
-          axios.get(`${API}/api/dEfee/`),
-          axios.get(`${API}/api/dHfee/`),
-          axios.get(`${API}/api/dTfee/`),
+        const [stuRes, feeRes] = await Promise.all([
           axios.get(`${API}/api/student/`),
+          axios.get(`${API}/api/decideFees/`),
         ]);
 
         const feeMap = new Map();
-        const addFee = (arr, key, prop) => {
-          arr.forEach((f) => {
-            if (!feeMap.has(f.student)) {
-              feeMap.set(f.student, { tuition: 0, exam: 0, hostel: 0, transport: 0 });
-            }
-            feeMap.get(f.student)[prop] = parseFloat(f[key] || 0);
-          });
-        };
-        addFee(tuitionRes.data,   "decidedamt",          "tuition");
-        addFee(examRes.data,      "decidedexamfee",      "exam");
-        addFee(hostelRes.data,    "decidedhostelfee",    "hostel");
-        addFee(transportRes.data, "decidedtransportfee", "transport");
-
-        const options = studentRes.data.map((stu) => {
-          const fees = feeMap.get(stu.student_id) || {
-            tuition: 0, exam: 0, hostel: 0, transport: 0,
-          };
-          const total = fees.tuition + fees.exam + fees.hostel + fees.transport;
-
-          return {
-            value: stu.student_id,
-            label: `${stu.student_id} - ${stu.name}`,
-            name: stu.name,
-            session: stu.session,
-            course: stu.course,
-            year: stu.year,
-            semester: stu.semester,
-            fees: { ...fees, total },
-          };
+        feeRes.data.forEach((fee) => {
+          feeMap.set(fee.student, parseFloat(fee.decidedamt || 0));
         });
+
+        const options = stuRes.data.map((stu) => ({
+          value: stu.student_id,
+          label: `${stu.student_id} - ${stu.name}`,
+          name: stu.name,
+          session: stu.session,
+          course: stu.course,
+          year: stu.year,
+          semester: stu.semester,
+          decidedamt: feeMap.get(stu.student_id) || 0,
+        }));
 
         setStudentOptions(options);
       } catch (err) {
-        toast.error("Failed to load data");
+        toast.error("Failed to load student data");
         console.error(err);
       }
     };
 
-    fetchAll();
+    fetchStudents();
   }, []);
 
   const handleStudentChange = async (option) => {
@@ -100,31 +75,48 @@ const DpFeesForm = () => {
     }
 
     const yearStr =
-      option.year === 1 || option.year === "1" ? "First" :
-      option.year === 2 || option.year === "2" ? "Second" : "Third";
+      option.year === 1 || option.year === "1"
+        ? "First"
+        : option.year === 2 || option.year === "2"
+        ? "Second"
+        : "Third";
 
     setSelectedStu(option);
 
     try {
       const res = await axios.get(`${API}/api/dpfees/`);
-      const deposits = res.data.filter(dep => dep.student === option.value);
-      const paidSoFar = deposits.reduce((sum, item) => sum + parseFloat(item.dpfees), 0);
+      const deposits = res.data.filter((dep) => dep.student === option.value);
 
-      const decideTotal = option.fees.total;
-      const pending = Math.max(0, decideTotal - paidSoFar);
+      const decidedFee = option.decidedamt || 0;
 
-      setForm({
-        ...blankForm,
-        student: option.value,
-        name: option.name,
-        session: option.session,
-        course: option.course,
-        year: yearStr,
-        semester: YEAR_SEMESTER[yearStr]?.[0] || "",
-        decide_fees: decideTotal,
-        dpfees: 0,
-        pending: pending,
-      });
+      if (deposits.length > 0) {
+        const paidSoFar = deposits.reduce((sum, item) => sum + parseFloat(item.dpfees), 0);
+        const pending = Math.max(0, decidedFee - paidSoFar);
+
+        setForm({
+          ...blankForm,
+          student: option.value,
+          name: option.name,
+          session: option.session,
+          course: option.course,
+          year: yearStr,
+          semester: YEAR_SEMESTER[yearStr]?.[0] || "",
+          decide_fees: decidedFee,
+          pending: pending,
+        });
+      } else {
+        setForm({
+          ...blankForm,
+          student: option.value,
+          name: option.name,
+          session: option.session,
+          course: option.course,
+          year: yearStr,
+          semester: YEAR_SEMESTER[yearStr]?.[0] || "",
+          decide_fees: decidedFee,
+          pending: decidedFee,
+        });
+      }
     } catch (err) {
       toast.error("Failed to fetch previous payments");
       console.error(err);
@@ -136,9 +128,9 @@ const DpFeesForm = () => {
     const updated = { ...form, [name]: value };
 
     if (name === "dpfees") {
-      const paid = Math.min(parseFloat(value || 0), parseFloat(form.decide_fees));
-      updated.dpfees  = paid;
-      updated.pending = parseFloat(form.decide_fees) - paid;
+      const paid = Math.min(parseFloat(value || 0), parseFloat(form.pending));
+      updated.dpfees = paid;
+      updated.pending = parseFloat(form.pending) - paid;
     }
 
     if (name === "year") {
@@ -160,24 +152,23 @@ const DpFeesForm = () => {
     }
 
     const payload = {
-      student:       form.student,
-      name:          form.name,
-      session:       form.session,
-      course:        form.course,
-      year:          form.year,
-      semester:      form.semester,
-      payment_mode:  form.payment_mode,
+      student: form.student,
+      name: form.name,
+      session: form.session,
+      course: form.course,
+      year: form.year,
+      semester: form.semester,
+      payment_mode: form.payment_mode,
       transaction_id: form.payment_mode === "cash" ? null : form.transaction_id,
-      decide_fees:   parseFloat(form.decide_fees),
-      dpfees:        parseFloat(form.dpfees),
-      pending:       parseFloat(form.pending),
-      remark:        form.remark,
+      decide_fees: parseFloat(form.decide_fees),
+      dpfees: parseFloat(form.dpfees),
+      pending: parseFloat(form.pending),
+      remark: form.remark,
     };
 
     try {
       const res = await axios.post(`${API}/api/dpfees/`, payload);
       toast.success(`Saved! Receipt No: ${res.data.receipt}`);
-
       setSelectedStu(null);
       setForm(blankForm);
     } catch (err) {
@@ -291,7 +282,7 @@ const DpFeesForm = () => {
                         type="number"
                         name="dpfees"
                         min="0"
-                        max={form.decide_fees}
+                        max={form.pending}
                         value={form.dpfees}
                         onChange={handleChange}
                         className="form-control"
