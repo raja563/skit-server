@@ -77,19 +77,22 @@ const FeesList = () => {
             }
             const e = deposits.get(d.student);
             e[cat] += parseFloat(d[field] ?? 0);
-            e.transactions.push({
-              receipt: d.receipt,
-              amount: parseFloat(d[field] ?? 0),
-              date: d.created_at,
-              remark: d.remark ?? "",
-              category: cat
-            });
+           e.transactions.push({
+  receipt: d.receipt,
+  amount: parseFloat(d[field] ?? 0),
+  date: d.created_at,
+  remark: d.remark ?? "",
+  category: cat,
+  payment_mode: d.payment_mode ?? "N/A",
+  transaction_id: d.transaction_id ?? "N/A"
+});
+
           });
         };
         addDep(acadDep.data, "dpfees", "academic");
         addDep(examDep.data, "dpexamfees", "exam");
         addDep(hostDep.data, "dphostelfees", "hostel");
-        addDep(transDep.data, "dptransportfees", "transport");
+       addDep(transDep.data, "dpTransportfees", "transport");  // fix the capital T
 
         const sInfo = new Map(
           students.data.map((s) => [
@@ -385,14 +388,15 @@ const FeesList = () => {
                       <td colSpan="21" className="p-0">
                         <table className="table mb-0 table-sm text-center">
                           <thead className="table-secondary">
-                            <tr>
-                              <th>Receipt No</th>
-                              <th>Category</th>
-                              <th>Amount</th>
-                              <th>Pay Date</th>
-                              <th>Remark</th>
-                            </tr>
-                          </thead>
+  <tr>
+    <th>Receipt No</th>
+    <th>Category</th>
+    <th>Amount</th>
+    <th>Pay Date</th>
+    <th>Remark</th>
+  </tr>
+</thead>
+
                           <tbody>
                             {r.transactions.length === 0 ? (
                               <tr>
@@ -401,12 +405,15 @@ const FeesList = () => {
                             ) : (
                               r.transactions.map((t, idx) => (
                                 <tr key={idx}>
-                                  <td>{t.receipt}</td>
-                                  <td className="text-capitalize">{t.category}</td>
-                                  <td>{fmt(t.amount)}</td>
-                                  <td>{formatDate(t.date)}</td>
-                                  <td className="text-start">{t.remark}</td>
-                                </tr>
+  <td>{t.receipt}</td>
+  <td className="text-capitalize">{t.category}</td>
+  <td>{fmt(t.amount)}</td>
+  <td>{formatDate(t.date)}</td>
+  <td className="text-start">{t.remark}</td>
+  <td>{t.payment_mode}</td>
+  <td>{t.transaction_id}</td>
+</tr>
+
                               ))
                             )}
                           </tbody>
