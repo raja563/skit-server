@@ -281,7 +281,6 @@ const DpFeesForm = () => {
                       <input
                         type="number"
                         name="dpfees"
-                        min="0"
                         max={form.pending}
                         value={form.dpfees}
                         onChange={handleChange}
