@@ -278,17 +278,18 @@ const DpFeesForm = () => {
                   <tr>
                     <td>{fix2(form.decide_fees)}</td>
                     <td>
-                      <input
-                        type="number"
-                        name="dpfees"
-                        max={form.pending}
-                        value={form.dpfees}
-                        onChange={handleChange}
-                        className="form-control"
-                        disabled={isLocked}
-                        required
-                      />
-                    </td>
+  <input
+    type="number"
+    name="dpfees"
+    max={form.pending}
+    value={form.dpfees === 0 ? "" : form.dpfees}  // Optional fallback if needed
+    onChange={handleChange}
+    className="form-control"
+    disabled={isLocked}
+    required
+  />
+</td>
+
                     <td>
                       <input
                         type="text"
