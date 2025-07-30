@@ -18,19 +18,20 @@ const DpFeesForm = () => {
   const [selectedStu, setSelectedStu] = useState(null);
 
   const blankForm = {
-    student: "",
-    name: "",
-    session: "",
-    course: "",
-    year: "",
-    semester: "",
-    decide_fees: 0,
-    dpfees: 0,
-    remark: "",
-    pending: 0,
-    payment_mode: "",
-    transaction_id: "",
-  };
+  student: "",
+  name: "",
+  session: "",
+  course: "",
+  year: "",
+  semester: "",
+  decide_fees: 0,
+  dpfees: "", // Make it empty string by default
+  remark: "",
+  pending: 0,
+  payment_mode: "",
+  transaction_id: "",
+};
+
   const [form, setForm] = useState(blankForm);
 
   useEffect(() => {
@@ -124,58 +125,74 @@ const DpFeesForm = () => {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    const updated = { ...form, [name]: value };
+  const { name, value } = e.target;
+  const updated = { ...form, [name]: value };
 
-    if (name === "dpfees") {
-      const paid = Math.min(parseFloat(value || 0), parseFloat(form.pending));
-      updated.dpfees = paid;
-      updated.pending = parseFloat(form.pending) - paid;
-    }
+  if (name === "dpfees") {
+    const paid = parseFloat(value || 0);
 
-    if (name === "year") {
-      updated.semester = YEAR_SEMESTER[value]?.[0] || "";
-    }
-
-    if (name === "payment_mode") {
-      updated.transaction_id = "";
-    }
-
-    setForm(updated);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!selectedStu) {
-      toast.error("Please select a student first");
+    if (paid > form.pending) {
+      toast.error("Amount exceeds pending fees!");
       return;
     }
 
-    const payload = {
-      student: form.student,
-      name: form.name,
-      session: form.session,
-      course: form.course,
-      year: form.year,
-      semester: form.semester,
-      payment_mode: form.payment_mode,
-      transaction_id: form.payment_mode === "cash" ? null : form.transaction_id,
-      decide_fees: parseFloat(form.decide_fees),
-      dpfees: parseFloat(form.dpfees),
-      pending: parseFloat(form.pending),
-      remark: form.remark,
-    };
+    updated.dpfees = value;
+    updated.pending = (form.decide_fees - paid).toFixed(2);
+  }
 
-    try {
-      const res = await axios.post(`${API}/api/dpfees/`, payload);
-      toast.success(`Saved! Receipt No: ${res.data.receipt}`);
-      setSelectedStu(null);
-      setForm(blankForm);
-    } catch (err) {
-      toast.error("Submission failed");
-      console.error(err.response?.data || err);
-    }
+  if (name === "year") {
+    updated.semester = YEAR_SEMESTER[value]?.[0] || "";
+  }
+
+  if (name === "payment_mode") {
+    updated.transaction_id = "";
+  }
+
+  setForm(updated);
+};
+
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!selectedStu) {
+    toast.error("Please select a student first");
+    return;
+  }
+
+  const paid = parseFloat(form.dpfees || 0);
+  const remaining = parseFloat(form.pending || 0);
+
+  if (remaining === 0 || paid === 0) {
+    toast.success("Settled / Full Fees Paid. No further payment needed.");
+    return;
+  }
+
+  const payload = {
+    student: form.student,
+    name: form.name,
+    session: form.session,
+    course: form.course,
+    year: form.year,
+    semester: form.semester,
+    payment_mode: form.payment_mode,
+    transaction_id: form.payment_mode === "cash" ? null : form.transaction_id,
+    decide_fees: parseFloat(form.decide_fees),
+    dpfees: paid,
+    pending: remaining,
+    remark: form.remark,
   };
+
+  try {
+    const res = await axios.post(`${API}/api/dpfees/`, payload);
+    toast.success(`Saved! Receipt No: ${res.data.receipt}`);
+    setSelectedStu(null);
+    setForm(blankForm);
+  } catch (err) {
+    toast.error("Submission failed");
+    console.error(err.response?.data || err);
+  }
+};
+
 
   const isLocked = !selectedStu;
   const fix2 = (n) => Number(n || 0).toFixed(2);
@@ -277,18 +294,18 @@ const DpFeesForm = () => {
                 <tbody className="text-center">
                   <tr>
                     <td>{fix2(form.decide_fees)}</td>
-                    <td>
-  <input
-    type="number"
-    name="dpfees"
-    max={form.pending}
-    value={form.dpfees === 0 ? "" : form.dpfees}  // Optional fallback if needed
-    onChange={handleChange}
-    className="form-control"
-    disabled={isLocked}
-    required
-  />
-</td>
+                   <td>
+                    <input
+                      type="number"
+                      name="dpfees"
+                      max={form.pending}
+                      value={form.dpfees === 0 ? "" : form.dpfees}
+                      onChange={handleChange}
+                      className="form-control"
+                      disabled={isLocked}
+                      required
+                    />
+                  </td>
 
                     <td>
                       <input
