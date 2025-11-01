@@ -28,7 +28,9 @@ import {
   FaChartLine,
 } from "react-icons/fa";
 
-const ATTENDANCE_ENDPOINT = "http://127.0.0.1:8000/api/attendance-records/";
+
+const API = import.meta.env.VITE_API_URL;
+const ATTENDANCE_ENDPOINT = `${API}/api/attendance-records/`;
 const COLORS = ["#4f46e5", "#06b6d4", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
 export default function AttReport({ apiUrl }) {

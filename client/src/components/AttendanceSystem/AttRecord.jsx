@@ -10,7 +10,8 @@ import { FaFileExcel, FaFilePdf, FaSync, FaInfoCircle } from "react-icons/fa"; /
 // For the modal functionality, we will use simple state and conditional rendering
 // to simulate a modal, as full Bootstrap JS might not be available.
 
-const API_URL = "http://127.0.0.1:8000/api/attendance-records/";
+const API = import.meta.env.VITE_API_URL;
+const API_URL = `${API}/api/attendance-records/`;
 
 /**
  * Attendance Records Component with Filtering, Pagination, Export, and Details Modal.
