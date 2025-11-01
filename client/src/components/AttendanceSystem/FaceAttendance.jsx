@@ -91,7 +91,7 @@ const formatTime = (timeString) => {
 
         // Save attendance record
         console.log("🧾 Attendance payload:", attendanceData);
-          // await axios.post(attendanceRecordURL, attendanceData);
+          await axios.post(attendanceRecordURL, attendanceData);
 
 
         // --- FIX: Use the message returned from the backend ---
