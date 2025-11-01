@@ -19,12 +19,13 @@ const Header = () => {
         <div className="right-topbar">
           <Link to={'https://csjmuadm.samarth.edu.in/'} target='blank' className="admission-btn btn-glow">🎓 Register for Admission 2025-26</Link>
 
-          <div className="login-wrapper nav-item">
-            <div className="nested-list">Login ▾
-              <ul className="dropdown login-dropdown nested-list-item">
-                <li><Link to="/login">Admin Login</Link></li>
-                <li><Link to="/student/login">Student Login</Link></li>
-                <li><Link to="/faculty/login">Faculty Login</Link></li>
+          <div className='login-btn'>
+            Login ▾
+            <div className="dropdown">
+              <ul>
+                <li><Link to="/login">Admin</Link></li>
+                <li><Link to="/student/login">Student</Link></li>
+                <li><Link to="/faculty/login">Faculty</Link></li>
               </ul>
             </div>
           </div>
@@ -47,25 +48,30 @@ const Header = () => {
           <li><Link to="/course">Course</Link></li>
           <li><Link to="/faculty">Faculty</Link></li>
 
-          <li className="nav-item nested-list">
-            <span className="nav-link">Gallery ▾</span>
-            <ul className="dropdown gallery-menu nested-list-item">
-              <li><Link to="/gallery/infra">Infra</Link></li>
-              <li><Link to="/gallery/event">Event</Link></li>
+          <li className='text-light'>
+           Gallery ▾
+            <div className="dropdown">
+            <ul>
+              <li><Link to="/infra">Infra</Link></li>
+              <li><Link to="/event">Event</Link></li>
             </ul>
+            </div>
           </li>
 
-          <li className="nav-item nested-list">
-            <span className="nav-link">Performer ▾</span>
-            <ul className="dropdown per-menu nested-list-item">
+          <li className='text-light'>
+            Performer ▾
+            <div className="dropdown">
+            <ul>
               <li><Link to="/performer/result">Result</Link></li>
               <li><Link to="/performer/placement">Placement</Link></li>
             </ul>
+            </div>
           </li>
 
           <li><Link to="/notice">News&Notice</Link></li>
           <li><Link to="/career">Career</Link></li>
           <li><Link to="/contact">Contact</Link></li>
+          <li><Link to="/attdash">Attendance</Link></li>
         </ul>
       </div>
     </header>

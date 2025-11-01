@@ -133,29 +133,30 @@ const Dashboard = () => {
         </div>
 
         {/* Sidebar */}
-        <div className="col-sm-4 col-lg-3 text-white mt-3">
+        <div className="col-sm-4 col-lg-2 text-white mt-3">
           <h4 className='text-white text-center'>Admin</h4>
           <ul className='sidebar'>
-            <li><Link to='/' className="text-warning">Back</Link></li>
-            <li className='nested-list'>Dashboard
-              <ul className='nested-list-item'>
+            <li><Link to='/' className="text-warning">Home</Link></li>
+            <li className='dash-list'>Dashboard
+              <div className="dropdown">
+              <ul>
                 <li><Link to='/admin'>Admin</Link></li>
-                <li><Link to='/faculty/dashboard'>Faculty</Link></li>
+                <li><Link to="/facdash">Faculty</Link></li>
                 <li><Link to='/studash'>Student</Link></li>
               </ul>
+              </div>
             </li>
-            <li>Faculty</li>
-            <li><Link to='/stpl'>Staff</Link></li>
             <li>Library</li>
-            <li>Department</li>
+            <li><Link to='/gallery'>Gallery</Link></li>
+            <li><Link to='/per'>Performer</Link></li>
+            <li>Event & Notice</li>
             <li><Link to={'/facultyPortal'}>Faculty Portel</Link></li>
             <li><Link to={'/student/portal'}>Student Portel</Link></li>
-            <li>Holiday</li>
           </ul>
         </div>
 
         {/* Main Content */}
-        <div className="col-sm-8 col-lg-9 mt-3">
+        <div className="col-sm-8 col-lg-10 mt-3">
           <div className="row g-4 mb-4 px-3 fade-in-up">
             <div className="col-md-4 col-sm-6">
               <Link to="/fees" className="text-decoration-none">
@@ -220,7 +221,7 @@ const Dashboard = () => {
             <div className="col-md-4 col-sm-6">
               <div className="dash-card bg-gradient-info">
                 <i className="fas fa-users fa-2x mb-1"></i>
-                <h5><Link to='/stpl'>Staff</Link></h5>
+                <h5><Link to='/attdash'>Attendance</Link></h5>
               </div>
             </div>
 

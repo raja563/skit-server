@@ -15,33 +15,37 @@ const FeesDashboard = () => {
     
     
             {/* Sidebar */}
-            <div className="col-sm-4 col-lg-3 text-white">
+            <div className="col-sm-4 col-lg-2 text-white">
               <ul className='sidebar'>
                               <li><Link className='text-warning' to={'/'}>Home</Link> / <Link className='text-warning' to={'/dashboard'}>Dashboard</Link></li>
                               <li><Link className='text-warning' to={'signup'}>Student Register</Link> </li>
-                              <li className='nested-list'>Decide
-                                 <ul className="nested-list-item">
+                              <li className='decide-list'>Decide
+                                <div className="dropdown">
+                                 <ul>
                                     <li> <Link to={'decide'}>Academic</Link></li>
                                     <li> <Link to={'dexam'}>Exam</Link></li>
                                     <li> <Link to={'dhfee'}>Hostal</Link></li>
                                     <li> <Link to={'dtfee'}>Transportation</Link></li>
                                  </ul>
+                                </div>
                               </li>
-                              <li> <Link to={'dflist'}>Decided Fees List</Link></li>
-                              <li className='nested-list'>Deposite
-                                 <ul className="nested-list-item list-shift">
+                              <li> <Link to={'dflist'}>Decide List</Link></li>
+                              <li className='decide-list'>Deposite
+                                <div className="dropdown">
+                                 <ul>
                                     <li> <Link to={'dpfees'}>Academic</Link></li>
                                     <li> <Link to={'dpEfee'}>Exam</Link></li>
                                     <li> <Link to={'dpHfee'}>Hostal</Link></li>
                                     <li> <Link to={'dpTfee'}>Transportation</Link></li>
                                  </ul>
+                                </div>
                               </li>
                               <li> <Link to={'flist'}>Fees List</Link></li>
                                         </ul>
             </div>
     
             {/* Right-hand Content Area */}
-            <div className="col-sm-8 col-lg-9">
+            <div className="col-sm-8 col-lg-10">
               <Outlet/>
             </div>
     

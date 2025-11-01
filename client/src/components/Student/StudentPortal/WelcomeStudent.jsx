@@ -1,7 +1,7 @@
 import React from 'react';
 
 const WelcomeStudent = () => {
-  const message = 'Welcome  to  SKIT  College !!!';
+  const message = 'Welcome  to  MAHGU !!!';
 
   return (
     <div className="welcome-container">

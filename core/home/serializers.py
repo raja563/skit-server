@@ -87,14 +87,89 @@ class SyllabusSerializer(serializers.ModelSerializer):
         model = Syllabus
         fields = '__all__'
 
+from rest_framework import serializers
+from .models import Attendance, AttendanceRecord, Student
 
-# student serializers 
 
+# ----------------------------
+# 1️⃣ Student Serializer
+# ----------------------------
 class StudentSerializer(serializers.ModelSerializer):
+    """Serializer for full student info (used in other modules if needed)."""
     class Meta:
         model = Student
         fields = '__all__'
 
+
+# ----------------------------
+# 2️⃣ Simple Student Serializer
+# ----------------------------
+class SimpleStudentSerializer(serializers.ModelSerializer):
+    """Minimal student info inside attendance record (for display only)."""
+    class Meta:
+        model = Student
+        fields = ['student_id', 'name', 'course']
+
+
+# ----------------------------
+# 3️⃣ Attendance Serializer
+# ----------------------------
+class AttendanceSerializer(serializers.ModelSerializer):
+    """Serializer for Attendance model (course + date)."""
+    # Change TimeField to DateTimeField for full timestamp accuracy
+    time_in = serializers.DateTimeField(format="%H:%M:%S", read_only=True)
+    time_out = serializers.DateTimeField(format="%H:%M:%S", read_only=True)
+    class Meta:
+        model = Attendance
+        fields = '__all__'
+
+from rest_framework import serializers
+from .models import AttendanceRecord, Student
+
+class SimpleStudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ['student_id', 'name', 'course']
+
+class AttendanceRecordSerializer(serializers.ModelSerializer):
+    student = SimpleStudentSerializer(read_only=True)
+    student_id = serializers.CharField(write_only=True)
+    time_in = serializers.DateTimeField(
+        required=False,
+        allow_null=True,
+        # You can keep the time-only format here if you only want to display H:M:S
+        format="%H:%M:%S", 
+        # You can remove 'format' and handle the formatting in React, but keeping 
+        # it here forces DRF to only output the time component string.
+    )
+    time_out = serializers.DateTimeField(
+        required=False,
+        allow_null=True,
+        format="%H:%M:%S",
+    )
+    class Meta:
+        model = AttendanceRecord
+        fields = '__all__'
+
+    def validate(self, attrs):
+        student_id = attrs.get('student_id')
+        student = attrs.get('student')
+
+        if not student and not student_id:
+            raise serializers.ValidationError({'student_id': 'Student ID or Student PK is required.'})
+
+        if not student:
+            try:
+                student = Student.objects.get(student_id=student_id)
+            except Student.DoesNotExist:
+                raise serializers.ValidationError({'student_id': 'Student not found.'})
+
+        attrs['student'] = student
+        return attrs
+
+    def create(self, validated_data):
+        validated_data.pop('student_id', None)
+        return AttendanceRecord.objects.create(**validated_data)
 
 
 # decide  fees serializers
@@ -165,7 +240,8 @@ from .models import DpExamFees
 class DpExamFeesSerializer(serializers.ModelSerializer):
     student = serializers.SlugRelatedField(
         queryset=Student.objects.all(),
-        slug_field='student_id'   # <-- reference to your custom student_id field
+        slug_field='student_id',
+        required=False   # <-- reference to your custom student_id field
     )
     class Meta:
         model = DpExamFees

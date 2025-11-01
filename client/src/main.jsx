@@ -59,11 +59,28 @@ import Admin from './components/AdminDashboard/Admin.jsx'
 import Signup from './components/AdminDashboard/Signup.jsx'
 import UserList from './components/AdminDashboard/UserList.jsx'
 import Login from './components/AdminDashboard/Login.jsx'
+import Event from './components/Gallery/Event.jsx'
+import Infra from './components/Gallery/Infra.jsx'
+import PerformerDashboard from './components/Performer/Performer.jsx'
+import Performer from './components/Performer/Performer.jsx'
+
+import AttendanceDash from './components/AttendanceSystem/AttendanceDash.jsx'
+import AttRecord from './components/AttendanceSystem/AttRecord.jsx'
+import FaceAttendance from './components/AttendanceSystem/FaceAttendance.jsx'
+import AttReport from './components/AttendanceSystem/AttReport.jsx'
+
+import AttHome from './components/AttendanceSystem/AttHome.jsx'
+
 let allRouter = createBrowserRouter([
   {
     path: '/',
-    element: <Home />,
+    element:<AttHome/>,
   },
+  {
+    path: '/markatt',
+    element:<FaceAttendance/>,
+  },
+
   {
     path: '/admin',
     element: <Admin/>,
@@ -83,7 +100,19 @@ let allRouter = createBrowserRouter([
   },
   {
     path: '/gallery',
-    element: <Gallery />
+    element: <Gallery/>
+  },
+  {
+    path: '/event',
+    element:<Event/>
+  },
+  {
+    path: '/infra',
+    element:<Infra/>
+  },
+  {
+    path: '/per',
+    element:<Performer/>
   },
   {
     path: '/contact',
@@ -193,27 +222,52 @@ let allRouter = createBrowserRouter([
     ]
   },
   {
+  path: '/attdash',
+  element: <AttendanceDash />,
+  children: [
+  //   { index: true, element: <WelcomeAttendance /> },
+  //   { path: 'mark', element: <MarkAttendance /> },
+    { path: 'records', element: <AttRecord /> },
+    { path: 'markAtt', element: <FaceAttendance /> },
+    { path: 'report', element: <AttReport/> },
+  //   { path: 'mark/:id', element: <MarkAttendance /> },
+  //   { path: '/attdash/records/mark/:id', element: <MarkAttendance /> },
+  //   { path: '/attdash', element: <Navigate to="/attdash/records/mark/:id" replace /> },
+  ]
+},
+  {
     path: '/student/signup',
     element: <StudentSignup />
   },
-  {
-    path: '/fees',
-    element: <FeesDashboard />,
-     children: [
-    { index: true, element:<WelcomeStudent/> }, // 👈 Default route for /student/portal
-    { path: 'decide', element:<DecideFee/> },
-    { path: 'dexam', element:<DecideExamFees/> },
-    { path: 'dhfee', element:<DecideHostelFee/> },
-    { path: 'dtfee', element:<DecideTFees/> },
-    { path: 'dflist', element:<DecidedList/> },
-    { path: 'flist', element:<FeesList/> },
-    { path: 'dpfees', element:<DpFeesForm/> },
-    { path: 'dpEfee', element:<DpExamFee/> },
-    { path: 'dpHfee', element:<DpHostelFee/> },
-    { path: 'dpTfee', element:<DpTransportFee/> },
-    { path:'signup', element: <StudentSignup />},
-   ]
-  },
+ {
+  path: '/fees',
+  element: <FeesDashboard />,
+  children: [
+    { index: true, element: <WelcomeStudent /> }, // Default route for /fees/
+    { path: 'decide', element: <DecideFee /> },
+    { path: 'dexam', element: <DecideExamFees /> },
+    { path: 'dhfee', element: <DecideHostelFee /> },
+    { path: 'dtfee', element: <DecideTFees /> },
+    { path: 'dflist', element: <DecidedList /> },
+    { path: 'flist', element: <FeesList /> },
+    
+    // Fee Deposit Forms — with optional :id param for editing existing deposit
+    { path: 'dpfees', element: <DpFeesForm /> },
+    { path: 'dpfees/:id', element: <DpFeesForm /> },           // matches /dpfees/5 for PATCH
+
+    { path: 'dpEfee', element: <DpExamFee /> },
+    { path: 'dpEfee/:id', element: <DpExamFee /> },           // matches /dpefee/5
+
+    { path: 'dpHfee', element: <DpHostelFee /> },
+    { path: 'dpHfee/:id', element: <DpHostelFee /> },         // matches /dphfee/5
+
+    { path: 'dpTfee', element: <DpTransportFee /> },
+    { path: 'dpTfee/:id', element: <DpTransportFee /> },      // matches /dptfee/5
+
+    { path: 'signup', element: <StudentSignup /> }
+  ]
+},
+
   {
     path: '/student/login',
     element: <StudentLogin />
@@ -230,6 +284,9 @@ let allRouter = createBrowserRouter([
     // { path: 'syllabus', element: <Syllabus /> },
   ]
   },
+
+
+
   {
     path: '/faculty/login',
     element: <FacultyLogin />

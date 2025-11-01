@@ -18,7 +18,7 @@ const Admin = () => {
           <div className="col-sm-4 col-lg-3 text-white">
             <ul className="sidebar">
               <li>
-                <Link className="text-warning" to="/">Home</Link> / <Link className="text-warning" to="/dashboard">Dashboard</Link>
+                <Link className="text-warning" to="/">Home</Link> / <Link className="text-warning" to="/attdash">Dashboard</Link>
               </li>
               <li>
                 <Link className="text-warning" to="signup">Add User</Link>

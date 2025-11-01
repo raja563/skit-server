@@ -56,7 +56,9 @@ const Login = () => {
 
       setLogin({ username: '', password: '' });
 
-      navigate('/dashboard');
+      // navigate('/dashboard');
+      navigate('/attdash');
+
     } catch (error) {
       const errData = error.response?.data;
       const errMsg =

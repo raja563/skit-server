@@ -110,7 +110,7 @@ const StudentSignup = () => {
         toast.success("Registered successfully!");
       }
 
-      navigate('/fees');
+      navigate('/attdash');
     } catch (err) {
       console.error(err);
       toast.error("Something went wrong!");
@@ -162,12 +162,67 @@ const StudentSignup = () => {
                     <input name="session" className="form-control" value={student.session} placeholder="Session (e.g., 2025-26)" onChange={inputHandler} />
                   </div>
                   <div className="col-md-6">
-                    <select name="course" className="form-select" value={student.course} onChange={inputHandler}>
-                      <option value="">Select Course</option>
-                      <option value="BCA">BCA</option>
-                      <option value="BBA">BBA</option>
-                      <option value="MCA">MCA</option>
-                    </select>
+                    <select
+  name="course"
+  className="form-select"
+  value={student.course}
+  onChange={inputHandler}
+>
+  <option value="">Select Department & Course</option>
+
+  {/* Computer Application */}
+  <optgroup label="Department of Computer Application">
+    <option value="BCA">Bachelor of Computer Application (BCA)</option>
+    <option value="MCA">Master of Computer Application (MCA)</option>
+    <option value="PhD in Computer Application">Ph.D. in Computer Application</option>
+  </optgroup>
+
+  {/* Pharmacy */}
+  <optgroup label="Department of Pharmacy">
+    <option value="D.Pharm">Diploma in Pharmacy (D.Pharm)</option>
+    <option value="B.Pharm">Bachelor of Pharmacy (B.Pharm)</option>
+    <option value="M.Pharm">Master of Pharmacy (M.Pharm)</option>
+    <option value="PhD in Pharmacy">Ph.D. in Pharmacy</option>
+  </optgroup>
+
+  {/* Management */}
+  <optgroup label="Department of Management">
+    <option value="BBA">Bachelor of Business Administration (BBA)</option>
+    <option value="MBA">Master of Business Administration (MBA)</option>
+    <option value="PhD in Management">Ph.D. in Management</option>
+  </optgroup>
+
+  {/* Hotel Management */}
+  <optgroup label="Department of Hotel Management">
+    <option value="BHM">Bachelor of Hotel Management (BHM)</option>
+    <option value="MHM">Master of Hotel Management (MHM)</option>
+    <option value="PhD in Hotel Management">Ph.D. in Hotel Management</option>
+  </optgroup>
+
+  {/* Agriculture */}
+  <optgroup label="Department of Agriculture">
+    <option value="B.Sc Agriculture">Bachelor of Science in Agriculture (B.Sc Agri)</option>
+    <option value="M.Sc Agriculture">Master of Science in Agriculture (M.Sc Agri)</option>
+    <option value="PhD in Agriculture">Ph.D. in Agriculture</option>
+  </optgroup>
+
+  {/* Arts and Law */}
+  <optgroup label="Department of Arts and Law">
+    <option value="BA">Bachelor of Arts (BA)</option>
+    <option value="MA">Master of Arts (MA)</option>
+    <option value="LLB">Bachelor of Law (LLB)</option>
+    <option value="LLM">Master of Law (LLM)</option>
+    <option value="PhD in Arts and Law">Ph.D. in Arts and Law</option>
+  </optgroup>
+
+  {/* Library Science */}
+  <optgroup label="Department of Library Science">
+    <option value="B.Lib">Bachelor of Library Science (B.Lib)</option>
+    <option value="M.Lib">Master of Library Science (M.Lib)</option>
+    <option value="PhD in Library Science">Ph.D. in Library Science</option>
+  </optgroup>
+</select>
+
                   </div>
                   <div className="col-md-6">
                     <label>Upload Image:</label>

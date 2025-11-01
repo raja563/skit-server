@@ -139,19 +139,87 @@
   position: relative;
   color: white;
 }
-.dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: var(--main-color);
-  display: none;
-  flex-direction: column;
-  padding: 10px 0;
-  border-radius: 6px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-  z-index: 999;
-  min-width: 180px;
+
+ul{
+  padding: 0;
+  margin: 0;
 }
+
+ul li{
+  list-style-type:none;
+  border-radius:8px;
+  margin:2px;
+}
+
+.dropdown{display: none;}
+.dropdown ul{
+ padding: 0;
+  margin: 0;
+  border-radius:8px;
+  background:var(--main-color);
+
+}
+.dropdown ul li a:hover{
+  border-radius:8px;
+  color: #1e1e1e;
+  background:lightgrey;
+
+}
+
+.login-btn:hover .dropdown{
+  display: block;
+  position: absolute;
+  margin-top:-12px;
+  margin-left:12px;
+  transition: 0.5s;
+}
+
+ul li:hover .dropdown{
+  display: block;
+  position: absolute;
+  margin-left:12px;
+  z-index: 2;
+  transition: 0.5s;
+}
+
+.decide-list ul{
+  background: var(--glass-bg);
+  padding: 0;
+  border-radius:8px;
+}
+.decide-list ul li{
+  margin:2px;
+  padding: 0;
+}
+
+.decide-list:hover .dropdown{
+  display: block;
+  position: absolute;
+  padding: 0;margin: 0;
+  margin-top: -32px;
+  margin-left:54px;
+  transition: 0.5s;
+}
+
+.dash-list ul{
+  background: var(--glass-bg);
+  padding: 0;
+  border-radius:8px;
+}
+.dash-list ul li{
+  padding: 0;
+  margin:4px;
+
+}
+
+.dash-list:hover .dropdown{
+  position: absolute;
+  top:8px;
+  margin-top: 5px;
+  margin-left: 62px;
+
+}
+
 .nav-item:hover .dropdown {
   display: flex;
 }

@@ -128,7 +128,6 @@ const UserList = () => {
             <th>#</th>
             <th>Username</th>
             <th>Email</th>
-            <th>Date Joined</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -138,7 +137,7 @@ const UserList = () => {
               <td>{indexOfFirst + index + 1}</td>
               <td>{user.username}</td>
               <td>{user.email}</td>
-              <td>{new Date(user.date_joined).toLocaleDateString()}</td>
+              
               <td>
                 <FaEllipsisV
                   className="mx-2 text-primary"

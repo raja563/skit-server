@@ -6,6 +6,11 @@ import axios from "axios";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import { FaEdit, FaTrash, FaEllipsisV, FaDownload, FaFilePdf, FaFileExcel } from 'react-icons/fa';
+import toast from "react-hot-toast";
+import { Button, Modal, Form } from "react-bootstrap";
+
+
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -22,6 +27,7 @@ const FeesList = () => {
   const [page, setPage] = useState(1);
   const [expanded, setExp] = useState(new Set());
   const [showAll, setShowAll] = useState(false);
+  const [data, setData] = useState([]);
   const LIMIT = 10;
 
   const toggleRow = (id) =>
@@ -30,6 +36,60 @@ const FeesList = () => {
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
+
+
+    // delete 
+const handleDeleteTransaction = async (transaction) => {
+  const { category, id, amount } = transaction;
+
+  const endpointMap = {
+    academic: "dpfees",
+    exam: "dpefee",
+    hostel: "dphfee",
+    transport: "dptfee",
+  };
+
+  const endpoint = endpointMap[category];
+  if (!endpoint || !id) {
+    toast.error("Missing transaction details.");
+    return;
+  }
+
+  try {
+    if (!window.confirm("Are you sure you want to delete this transaction?")) return;
+    await axios.delete(`${BASE_URL}/api/${endpoint}/${id}/`);
+    toast.success(`Deleted ${category} transaction`);
+
+    // Update frontend state
+    setRows((prevRows) =>
+      prevRows.map((row) => {
+        const exists = row.transactions.some((t) => t.id === id);
+        if (!exists) return row;
+
+        const updatedTransactions = row.transactions.filter((t) => t.id !== id);
+
+        return {
+          ...row,
+          paid: {
+            ...row.paid,
+            [category]: row.paid[category] - amount,
+          },
+          pending: {
+            ...row.pending,
+            [category]: row.pending[category] + amount,
+          },
+          transactions: updatedTransactions,
+        };
+      })
+    );
+  } catch (error) {
+    console.error("Delete failed:", error);
+    toast.error("Failed to delete transaction");
+  }
+};
+
+
+
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -64,35 +124,40 @@ const FeesList = () => {
         };
 
         const deposits = new Map();
-        const addDep = (arr, field, cat) => {
-          arr.forEach((d) => {
-            if (!deposits.has(d.student)) {
-              deposits.set(d.student, {
-                academic: 0,
-                exam: 0,
-                hostel: 0,
-                transport: 0,
-                transactions: []
-              });
-            }
-            const e = deposits.get(d.student);
-            e[cat] += parseFloat(d[field] ?? 0);
-           e.transactions.push({
-  receipt: d.receipt,
-  amount: parseFloat(d[field] ?? 0),
-  date: d.created_at,
-  remark: d.remark ?? "",
-  category: cat,
-  payment_mode: d.payment_mode ?? "N/A",
-  transaction_id: d.transaction_id ?? "N/A"
-});
 
-          });
-        };
+
+        const addDep = (arr, field, cat) => {
+  arr.forEach((d) => {
+    if (!deposits.has(d.student)) {
+      deposits.set(d.student, {
+        academic: 0,
+        exam: 0,
+        hostel: 0,
+        transport: 0,
+        transactions: []
+      });
+    }
+
+    const e = deposits.get(d.student);
+    e[cat] += parseFloat(d[field] ?? 0);
+    
+    e.transactions.push({
+      id: d.id, // ✅ Required for delete functionality
+      receipt: d.receipt,
+      amount: parseFloat(d[field] ?? 0),
+      date: d.created_at,
+      remark: d.remark ?? "",
+      category: cat,
+      payment_mode: d.payment_mode ?? "N/A",
+      transaction_id: d.transaction_id ?? "N/A"
+    });
+  });
+};
+
         addDep(acadDep.data, "dpfees", "academic");
         addDep(examDep.data, "dpexamfees", "exam");
         addDep(hostDep.data, "dphostelfees", "hostel");
-       addDep(transDep.data, "dpTransportfees", "transport");  // fix the capital T
+       addDep(transDep.data, "dpTransportfees", "transport");// fix the capital T
 
         const sInfo = new Map(
           students.data.map((s) => [
@@ -131,6 +196,9 @@ const FeesList = () => {
           const statusLabel = totalPend <= 0 ? "Settled" : "Pending";
           const stu = sInfo.get(id) ?? {};
           const latestTx = p.transactions.at(-1) ?? {};
+
+ 
+
 
           out.push({
             student_id: id,
@@ -224,15 +292,34 @@ const FeesList = () => {
     doc.save("FeesList.pdf");
   };
 
+
+
+
+
+
+
+const fetchData = async (endpoint) => {
+  try {
+    const response = await axios.get(`${baseURL}/api/${endpoint}/`);
+    setData(response.data);
+  } catch (error) {
+    console.error("Failed to fetch data", error);
+  }
+};
+
+
+
+
+
   return (
     <div className="container-fluid">
-      <h4 className="text-center text-white p-1 bg-success">
+      <h4 className="text-center text-white p-2 mt-3 rounded bg-success">
         Student Fees Information
       </h4>
 
       {/* ▸ Toolbar ----------------------------------------- */}
      {/* ▸ Toolbar ----------------------------------------- */}
-<div className="row align-items-center g-2 my-2">
+<div className="row align-items-center g-2 ">
   <div className="col-lg-2 col-md-3 col-sm-6">
     <input
       className="form-control"
@@ -394,29 +481,40 @@ const FeesList = () => {
     <th>Amount</th>
     <th>Pay Date</th>
     <th>Remark</th>
+    <th>Mode</th>
+    <th>Transition Id</th>
+    <th>Action</th>
   </tr>
 </thead>
 
-                          <tbody>
-                            {r.transactions.length === 0 ? (
-                              <tr>
-                                <td colSpan="5">No Transactions</td>
-                              </tr>
-                            ) : (
-                              r.transactions.map((t, idx) => (
-                                <tr key={idx}>
-  <td>{t.receipt}</td>
-  <td className="text-capitalize">{t.category}</td>
-  <td>{fmt(t.amount)}</td>
-  <td>{formatDate(t.date)}</td>
-  <td className="text-start">{t.remark}</td>
-  <td>{t.payment_mode}</td>
-  <td>{t.transaction_id}</td>
-</tr>
+<tbody>
+  {r.transactions.length === 0 ? (
+    <tr>
+      <td colSpan="8">No Transactions</td>
+    </tr>
+  ) : (
+    r.transactions.map((t, idx) => (
+      <tr key={idx}>
+        <td>{t.receipt}</td>
+        <td className="text-capitalize">{t.category}</td>
+        <td>{fmt(t.amount)}</td>
+        <td>{formatDate(t.date)}</td>
+        <td className="text-start">{t.remark}</td>
+        <td>{t.payment_mode}</td>
+        <td>{t.transaction_id}</td>
+        <td>
+          <button
+            className="btn btn-danger btn-sm me-2"
+            onClick={() => handleDeleteTransaction(t)}
+          >
+            <FaTrash />
+          </button>
+        </td>
+      </tr>
+    ))
+  )}
+</tbody>
 
-                              ))
-                            )}
-                          </tbody>
                         </table>
                       </td>
                     </tr>

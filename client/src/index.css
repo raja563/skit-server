@@ -40,3 +40,9 @@
     margin: auto;
     width: 120px;
 }
+
+.modal-dark .modal-content {
+  background-color: #1c1c1c;
+  color: white;
+  border: none;
+}
