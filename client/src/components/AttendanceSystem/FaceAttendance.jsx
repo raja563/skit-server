@@ -7,7 +7,7 @@ const API = import.meta.env.VITE_API_URL;
 const markAttendanceURL = `${API}/api/mark-attendance/`;
 const getStudentByPkURL = `${API}/api/student/`;
 const getStudentPkURL = `${API}/api/get-student-pk/`;
-const attendanceRecordURL = `${API}/api/attendance-records/`;
+// const attendanceRecordURL = `${API}/api/attendance-records/`;
 
 export default function FaceAttendance() {
   const webcamRef = useRef(null);
@@ -91,7 +91,7 @@ const formatTime = (timeString) => {
 
         // Save attendance record
         console.log("🧾 Attendance payload:", attendanceData);
-          await axios.post(attendanceRecordURL, attendanceData);
+          // await axios.post(attendanceRecordURL, attendanceData);
 
 
         // --- FIX: Use the message returned from the backend ---
